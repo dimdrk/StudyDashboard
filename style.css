@@ -1,0 +1,65 @@
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.4);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.7);
+}
+.prose pre {
+    background-color: #1e293b;
+    color: #f8fafc;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    position: relative;
+}
+.prose code {
+    color: #38bdf8;
+    font-family: 'Fira Code', monospace;
+}
+.prose table {
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+.prose th {
+    background-color: rgba(3, 105, 161, 0.1);
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    border-bottom: 2px solid #0284c7;
+}
+.dark .prose th {
+    background-color: rgba(14, 165, 233, 0.15);
+    border-bottom: 2px solid #38bdf8;
+}
+.prose td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+}
+.dark .prose td {
+    border-bottom: 1px solid rgba(55, 65, 81, 0.7);
+}
+.flashcard {
+    perspective: 1000px;
+}
+.flashcard-inner {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+.flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+.flashcard-front, .flashcard-back {
+    backface-visibility: hidden;
+}
+.flashcard-back {
+    transform: rotateY(180deg);
+}
