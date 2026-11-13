@@ -1048,16 +1048,60 @@
                         title: "2.2 Configure and verify interswitch connectivity",
                         summary: "Trunk ports, 802.1Q, Native VLAN",
                         content: `
-                            <p>Native VLAN frames cross trunks <strong>untagged</strong>. Both sides must match to avoid CDP mismatch alerts and VLAN leaking.</p>
-                            <pre><code>Switch(config-if)# switchport mode trunk\nSwitch(config-if)# switchport trunk native vlan 99\nSwitch(config-if)# switchport trunk allowed vlan 10,20,99</code></pre>
+                            <h3><strong>1. Key Concepts</strong></h3>
+                            <ul>
+                                <li><strong>802.1Q:</strong> The standard "tagging" protocol. It inserts a 4-byte tag into the Ethernet frame header to identify which VLAN the traffic belongs to.</li>
+                                <li><strong>Native VLAN:</strong> By default, this is VLAN 1. Frames belonging to the Native VLAN are sent across the trunk <b>untagged</b>. <br>For security reasons, it is a best practice to change this to a non-default VLAN.</li>
+                                <li><strong>Allowed VLANs:</strong> A security feature that restricts which VLANs can actually cross the trunk link.</li>
+                            </ul>
+
+                            <h3><strong>2. Configuration Steps</strong></h3>
+                            <p>Let's assume we are connecting two switches via their <b>GigabitEthernet 0/1</b> interfaces. We want to use <b>VLAN 99</b> as our Native VLAN and allow <b>VLANs 10, 20, and 99</b>.</p>
+
+                            <pre># On Switch A (and repeat on Switch B):\nSwitch# <code>configure terminal</code>\nSwitch(config)# <code>interface GigabitEthernet 0/1</code>\nSwitch(config-if)# <code>switchport mode trunk</code>\nSwitch(config-if)# <code>switchport trunk native vlan 99</code>\nSwitch(config-if)# <code>switchport trunk allowed vlan 10,20,99</code>\nSwitch(config-if)# <code>description Link_to_Switch_B</code>\nSwitch(config-if)# <code>exit</code>\n\n# (Optional on some newer switches) Set the encapsulation to <code>802.1Q</code>\n# Note: Many modern switches only support dot1q and skip this command\nswitchport trunk encapsulation dot1q</pre>
+                            
+                            <h3><strong>3. Verification Commands</strong></h3>
+                            <p>Once configured, you must verify that the trunk is operational. Here are the most important commands:</p>
+
+                            <h3><strong>A. The "Gold Standard" Command</strong></h3>
+                            <p>This command provides a concise summary of trunking status, the native VLAN, and allowed VLANs.</p>
+                            <pre>Switch# <code>show interfaces trunk</code>\n\n* Look for: Status <code>trunking</code>, Native VLAN <code>99</code>, and the list of allowed VLANs.</pre>
+                            
+                            <h3><strong>B. Detailed Interface Status" Command</strong></h3>
+                            <p>If you need to see the administrative vs. operational mode (e.g., if DTP is being used):</p>
+                            <pre>Switch# <code>show interfaces GigabitEthernet 0/1 switchport</code></pre>
+                            
+                            <h3><strong>C. Interface Status Summary" Command</strong></h3>
+                            <p>To see if the physical line is "up/up":</p>
+                            <pre>Switch# <code>show interfaces description</code></pre>
+
+                            <h3><strong>4. Common Troubleshooting Tips (CCNA Essentials)</strong></h3>
+                            <ul>
+                                <li><strong>Native VLAN Mismatch:</strong> If Switch A has Native VLAN 99 and Switch B has Native VLAN 1, the switch will log "Native VLAN mismatch" errors via CDP (Cisco Discovery Protocol). This can cause traffic leaking between VLANs.</li>
+                                <li><strong>Trunk Mode Mismatch:</strong> If one side is set to <code>access</code> and the other to <code>trunk</code>, the link will not function correctly for multiple VLANs.</li>
+                                <li><strong>VLAN Pruning:</strong> If you forget to add a VLAN to the <code>switchport trunk allowed vlan</code> list, that VLAN's traffic will be dropped, even if the trunk is "up.</li>
+                            </ul>
+                            <p><strong>Pro-Tip:</strong> Always remember to create the VLANs in the switch database using the <code>vlan 10</code>, <code>vlan 20</code>, etc., commands. A trunk cannot carry a VLAN that <b>doesn't exist</b> on the switch!</p>
                         `
                     },
                     {
                         id: "2.3",
-                        title: "2.3 Discovery Protocols: CDP vs LLDP",
+                        title: "2.3 Configure and verify Layer 2 discovery protocols",
                         summary: "Cisco Proprietary CDP vs IEEE 802.1AB LLDP",
                         content: `
-                            <pre><code># Enable LLDP Globally & Transmit/Receive\nSwitch(config)# lldp run\nSwitch(config-if)# lldp transmit\nSwitch(config-if)# lldp receive\n\n# Verification\nSwitch# show cdp neighbors detail\nSwitch# show lldp neighbors</code></pre>
+                            <h3><strong>1. Cisco Discovery Protocol (CDP)</strong></h3>
+                            <p><strong>CDP</strong> is a Cisco-proprietary protocol. It is <strong>enabled</strong> by default on almost all Cisco devices.<br>It shares information like the device ID, local interface, capability (Router/Switch), and the platform model.</p>
+
+                            <h3><strong>Global Configuration</strong></h3>
+                            <p>To enable or disable CDP globally on the device:</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>cdp run</code>      # Enables CDP globally\nRouter(config)# <code>no cdp run</code>   # Disables CDP globally</pre>
+
+                            <h3><strong>Interface Specific Configuration</strong></h3>
+                            <p>Sometimes you want CDP running on your trunk links but disabled on ports facing the public or end-users for security.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/1</code>\nRouter(config-if)# <code>cdp enable</code>      # Enables CDP on this interface\nRouter(config-if)# <code>no cdp enable</code>   # Disables CDP on this interface</code>\nRouter(config-if)# <code>exit</code></pre>
+
+                            <h3><strong>2. Link Layer Discovery Protocol (LLDP)</strong></h3>
+                            <p><strong>LLDP</strong> is the IEEE 802.1AB standard. It is vendor-neutral, meaning it works between Cisco, Juniper, HP, and other hardware. On many Cisco devices, it is <strong>disabled</strong> by default.</p>
                         `
                     },
                     {
