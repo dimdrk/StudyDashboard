@@ -1102,6 +1102,29 @@
 
                             <h3><strong>2. Link Layer Discovery Protocol (LLDP)</strong></h3>
                             <p><strong>LLDP</strong> is the IEEE 802.1AB standard. It is vendor-neutral, meaning it works between Cisco, Juniper, HP, and other hardware. On many Cisco devices, it is <strong>disabled</strong> by default.</p>
+
+                            <h3><strong>Global Configuration</strong></h3>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>lldp run</code>         # Enables LLDP globally\nRouter(config)# <code>no lldp run</code>      # Disables LLDP globally</pre>
+
+                            <h3><strong>Interface Specific Configurations</strong></h3>
+                            <p>Unlike CDP, LLDP allows you to granularly control whether you are <strong>sending</strong> or <strong>receiving</strong> discovery packets.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/1</code>\nRouter(config-if)# <code>lldp transmit</code>       # The interface will send LLDP packets\nRouter(config-if)# <code>lldp receive</code>        # he interface will process incoming LLDP packets\nRouter(config-if)# <code>exit</code></pre>
+
+                            <h3><strong>3. Verification Commands</strong></h3>
+                            <p>Once configured, you need to verify that your device can see its neighbors. These commands are the "bread and butter" of network discovery.</p>
+
+                            <h3><strong>To see a summary of neighbors:</strong></h3>
+                            <p>These commands show you a quick list of what is connected and where.</p>
+                            <pre>Router# <code>show cdp neighbors</code>\nRouter# <code>show lldp neighbors</code></pre>
+
+                            <h3><strong>To see detailed information (IP addresses, software versions):</strong></h3>
+                            <p>If you need to know the IP address of the neighbor to SSH into it, use the 'detail' modifier.</p>
+                            <pre>Router# <code>show cdp neighbors detail</code>\nRouter# <code>show lldp neighbors detail</code></pre>
+
+                            <h3><strong>To verify protocol status and timers:</strong></h3>
+                            <p>This confirms if the protocol is active and how often it sends updates.</p>
+                            <pre>Router# <code>show cdp</code>\nRouter# <code>show lldp</code>\nRouter# <code>show cdp interface GigabitEthernet0/1</code></pre>
+
                         `
                     },
                     {
