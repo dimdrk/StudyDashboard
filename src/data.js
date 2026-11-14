@@ -1842,8 +1842,8 @@
                 topics: [
                     {
                         id: "3.1",
-                        title: "3.1 Routing Table Components & AD",
-                        summary: "Administrative Distance Table, Prefix, Metric, Next Hop",
+                        title: "3.1 Interpret the components of routing table",
+                        summary: "Protocol code, Prefix, Network mask, Next hop, Administrative distance, Metric, Gateway of last resort",
                         content: `
                             <h3>Default Administrative Distances (AD)</h3>
                             <ul>
