@@ -1212,15 +1212,80 @@
                     },
                     {
                         id: "2.5",
-                        title: "2.5 Rapid PVST+ Spanning Tree (802.1w)",
+                        title: "2.5 Interpret basic operations of Rapid PVST+ Spanning Tree Protocol (802.1w)",
                         summary: "Root Bridge Selection, Port Roles, PortFast Edge Ports",
                         content: `
+                            <h3><strong>1. The Root Bridge</strong></h3>
+                            <p>The Root Bridge is the "center of the universe" for a specific VLAN. All path calculations are based on reaching this switch.</p>
                             <ul>
-                                <li><strong>Root Bridge Selection:</strong> Lowest Bridge ID (Priority + MAC). Priority steps of 4096.</li>
-                                <li><strong>Port States:</strong> Discarding, Learning, Forwarding.</li>
+                                <li><strong>Selection:</strong> The switch with the <strong>lowest Bridge ID</strong> becomes the Root Bridge. Priority steps of 4096.</li>
+                                <li><strong>Bridge ID:</strong> Composed of Priority (Default 32768) + VLAN ID + MAC Address.</li>
                                 <li><strong>PortFast:</strong> Enables immediate transition from Discarding to Forwarding on access ports.</li>
                             </ul>
-                            <pre><code>Switch(config)# spanning-tree mode rapid-pvst\nSwitch(config)# spanning-tree vlan 10 root primary\nSwitch(config-if)# spanning-tree portfast</code></pre>
+                            <p><strong>Tip:</strong> In a production network, you should always manually set your primary and secondary root bridges to ensure the most powerful switches handle the traffic.</p>
+                            <h3><strong>Configuration Example:</strong></h3>
+                            <pre># Set the switch as the primary root for VLAN 10\nSwitch(config)# <code>spanning-tree vlan 10 root primary</code>\n\n# Or manually set a lower priority (must be in increments of 4096)\nSwitch(config)# <code>spanning-tree vlan 10 priority 4096</code></pre>
+
+                            <h3><strong>2. Port Roles</strong></h3>
+                            <p>Rapid PVST+ defines how ports function within the topology:</p>
+                            <ul>
+                                <li><strong>Root Port (RP):</strong> The port on a non-root switch that has the <strong>lowest path cost</strong> to the Root Bridge. Every non-root switch must have exactly one Root Port.</li>
+                                <li><strong>Designated Port (DP):</strong> The port on a network segment (link) that provides the best path to the Root Bridge. All ports on a Root Bridge are Designated Ports.</li>
+                                <li><strong>Alternate Port (AP):</strong> A "standby" port that offers a redundant path to the Root Bridge but is currently in a discarding state. If the Root Port fails, the Alternate Port can transition to Forwarding almost instantly.</li>
+                                <li><strong>Backup Port:</strong> A redundant path to a segment already connected by another port on the same switch (rarely seen unless using hubs).</li>
+                            </ul>
+                            <h3><strong>3. Port States</strong></h3>
+                            <p>To simplify operations, Rapid PVST+ reduced the five legacy STP states down to three:</p>
+                            <ul>
+                                <li><strong>Discarding:</strong> The port does not forward data frames or learn MAC addresses. It only listens for BPDUs (Bridge Protocol Data Units). This combines the old Disabled, Blocking, and Listening states.</li>
+                                <li><strong>Learning:</strong> The port populates the MAC address table but does not yet forward data frames.</li>
+                                <li><strong>Forwarding:</strong> The port is fully operational, sending and receiving data.</li>
+                            </ul>
+                            <h3><strong>4. PortFast (Edge Ports)</strong></h3>
+                            <p>In standard Spanning Tree, when you plug in a PC, the port goes through several states, taking up to 30–50 seconds to start forwarding. This can cause DHCP timeouts.</p>
+                            <strong>PortFast</strong> (internally called an "Edge Port" in RSTP terms) allows a port to transition from Discarding to <strong>Forwarding immediately</strong>.<br><strong>- Where to use:</strong> Only on "edge" devices (PCs, Servers, Printers).<br><strong>- Warning:</strong> Never enable PortFast on a link connected to another switch, as this can create a catastrophic switching loop!</p>
+                            <h3><strong>Configuration Example:</strong></h3>
+                            <pre># Enable PortFast on a specific interface\nSwitch(config-if)# <code>spanning-tree portfast</code>\n\n# Enable PortFast globally for all access ports\nSwitch(config)# <code>spanning-tree portfast default</code></pre>
+
+                            <h3><strong>5. Enabling Rapid PVST+</strong></h3>
+                            <p>By default, many older Cisco switches run legacy PVST+. To take advantage of the fast convergence of 802.1w, you must change the mode.</p>
+                            <h3><strong>Configuration Example:</strong></h3>
+                            <pre># Change the spanning tree mode to Rapid PVST\nSwitch(config)# <code>spanning-tree mode rapid-pvst</code></pre>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table for Quick Reference</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Legacy STP (802.1D)</th>
+                                        <th>Rapid PVST+ (802.1w)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><b>Convergence<b></td>
+                                        <td>Slow (30-50 seconds)</td>
+                                        <td>Fast (under 1 second)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Port States<b></td>
+                                        <td>Blocking, Listening, Learning, Forwarding</td>
+                                        <td>Discarding, Learning, Forwarding</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Port Roles<b></td>
+                                        <td>Root, Designated, Non-Designated</td>
+                                        <td>Root, Designated, Alternate, Backup</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Handshake<b></td>
+                                        <td>Timer-based (Forward Delay)</td>
+                                        <td>Proposal/Agreement handshake</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         `
                     },
                     {
