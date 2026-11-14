@@ -1290,15 +1290,89 @@
                     },
                     {
                         id: "2.6",
-                        title: "2.6 Advanced STP Security Protections",
-                        summary: "BPDU Guard, BPDU Filter, Root Guard, Loop Guard",
+                        title: "2.6 Describe advanced STP protections",
+                        summary: "Root guard, loop guard, BPDU filter, and BPDU guard",
                         content: `
+                            <h3><strong>1. BPDU Guard</strong></h3>
+                            <p><strong>BPDU Guard</strong> is your first line of defense on access ports. In a normal network, end-user devices (PCs, printers, IP phones) should never send Bridge Protocol Data Units (BPDUs). If a port receives a BPDU, it means someone has plugged in a switch.</p>
+                            <ul>
+                                <li><strong>Function:</strong> If a BPDU is received on a port, the switch immediately shuts the port down to prevent a loop.</li>
+                                <li><strong>Result:</strong> The port enters the <strong>err-disabled</strong> state.</li>
+                                <li><strong>Where to apply:</strong> On all <strong>PortFast</strong> (access) ports.</li>
+                            </ul>
+                            <h3><strong>Configuration:</strong></h3>
+                            <pre># Global configuration (applies to all PortFast ports)\nSwitch(config)# <code>spanning-tree portfast bpduguard default</code>\n\n# Interface specific configuration\nSwitch(config-if)# <code>spanning-tree bpduguard enable</code></pre>
+                            
+                            <h3><strong>2. BPDU Filter</strong></h3>
+                            <p><strong>BPDU Filter</strong> is a bit more aggressive. It effectively "silences" STP on a port.</p>
+                            <ul>
+                                <li><strong>Function:</strong> It prevents the port from sending BPDUs and ignores any incoming BPDUs.</li>
+                                <li><strong>The Risk:</strong> Use this with extreme caution! If you connect two switches via ports with BPDU Filter enabled, they won't "see" each other's STP messages, and a switching loop will occur.</li>
+                                <li><strong>Where to apply:</strong> Rarely used, but helpful in niche scenarios where you want to completely hide your STP topology from a neighbor.</li>
+                            </ul>
+                            <h3><strong>Configuration:</strong></h3>
+                            <pre># Interface specific configuration\nSwitch(config-if)# <code>spanning-tree bpdufilter enable</code></pre>
+                            
+                            <h3><strong>3. Root Guard</strong></h3>
+                            <p>In STP, the switch with the lowest Bridge ID becomes the Root Bridge. If a user brings in a cheap home switch with a very low priority, it could "steal" the Root Bridge role, causing traffic to flow through an inefficient path.</p>
+                            <ul>
+                                <li><strong>Function:</strong> It forces a port to stay a "Designated Port" (downstream). If the port receives a <strong>Superior BPDU</strong> (one claiming to be a better Root Bridge), the switch won't let it take over.</li>
+                                <li><strong>Result:</strong> The port is placed into a <strong>root-inconsistent</strong
+                                > state (essentially blocking traffic) until the superior BPDUs stop.</li>
+                                <li><strong>Where to apply:</strong> On the ports of your actual Root Bridge that lead toward your distribution or access switches.</li>
+                            </ul>
+                            <h3><strong>Configuration:</strong></h3>
+                            <pre># Interface specific configuration (applied on the "downstream" port)\nSwitch(config-if)# <code>spanning-tree guard root</code></pre>
+                            
+                            <h3><strong>4. Loop Guard</strong></h3>
+                            <p>STP relies on the constant receipt of BPDUs to keep a port in a "Blocking" state. If a hardware failure (like a faulty fiber optic strand) causes a port to stop receiving BPDUs, the port might transition to "Forwarding," thinking the path is clear. This creates a loop.</p>
+                            <ul>
+                                <li><strong>Function:</strong> It checks if BPDUs are still being received. If BPDUs disappear on a non-designated port, Loop Guard prevents it from transitioning to Forwarding.</li>
+                                <li><strong>Result:</strong> The port is placed into a <strong>loop-inconsistent</strong
+                                > state.</li>
+                                <li><strong>Where to apply:</strong> On ports that are normally in a Blocking or Root state (uplinks).</li>
+                            </ul>
+                            <h3><strong>Configuration:</strong></h3>
+                            <pre># Global configuration\nSwitch(config)# <code>spanning-tree loopguard default</code>\n\n# Interface specific configuration\nSwitch(config-if)# <code>spanning-tree guard loop</code></pre>
+
+
                             <table>
-                                <thead><tr><th>Feature</th><th>Purpose</th><th>Triggered State</th></tr></thead>
+                                <caption>
+                                    <b>Summary Table for Quick Reference</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Primary Goal</th>
+                                        <th>State if Triggered</th>
+                                        <th>Placement</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
-                                    <tr><td><strong>BPDU Guard</strong></td><td>Shuts down access ports receiving BPDUs</td><td>err-disabled</td></tr>
-                                    <tr><td><strong>Root Guard</strong></td><td>Prevents rogue switch from becoming Root</td><td>root-inconsistent</td></tr>
-                                    <tr><td><strong>Loop Guard</strong></td><td>Prevents loops from unidirectional link failure</td><td>loop-inconsistent</td></tr>
+                                    <tr>
+                                        <td><strong>BPDU Guard</strong></td>
+                                        <td>Protect access ports from unauthorized switches.</td>
+                                        <td>err-disabled</td>
+                                        <td>Access / PortFast Ports</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>BPDU Filter</strong></td>
+                                        <td>Stop sending/receiving BPDUs entirely.</td>
+                                        <td>Normal/Operational</td>
+                                        <td>Special use cases only</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Root Guard</strong></td>
+                                        <td>Prevent an unauthorized switch from becoming Root.</td>
+                                        <td>root-inconsistent</td>
+                                        <td>Root Bridge "downlink" ports</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Loop Guard</strong></td>
+                                        <td>Prevent loops caused by unidirectional link failure.</td>
+                                        <td>loop-inconsistent</td>
+                                        <td>Blocking / Root Ports</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         `
