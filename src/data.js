@@ -1335,7 +1335,6 @@
                             <h3><strong>Configuration:</strong></h3>
                             <pre># Global configuration\nSwitch(config)# <code>spanning-tree loopguard default</code>\n\n# Interface specific configuration\nSwitch(config-if)# <code>spanning-tree guard loop</code></pre>
 
-
                             <table>
                                 <caption>
                                     <b>Summary Table for Quick Reference</b>
@@ -1379,11 +1378,90 @@
                     },
                     {
                         id: "2.7",
-                        title: "2.7 Cisco Wireless Architectures & LAP Modes",
+                        title: "2.7 Describe Cisco Wireless Architectures and AP modes",
                         summary: "Split-MAC, CAPWAP Tunnels (UDP 5246/5247), AP Modes",
                         content: `
-                            <p><strong>Split-MAC Architecture:</strong> LAP handles real-time tasks (beacons/encryption); WLC handles management (Auth, RRM, Roaming).</p>
-                            <p><strong>LAP Modes:</strong> Local (default client traffic), FlexConnect (branch survivability), Monitor (sensor), Sniffer (Wireshark capture).</p>
+                            <h3><strong>1. Cisco Wireless Architectures</strong></h3>
+                            <p>Wireless architectures define where the "brains" of the operation live.<p>
+                            <h3><strong>A. Autonomous Architecture</strong><h3>
+                            <p>In this legacy approach, each AP is a standalone unit. It is a "fat" AP, meaning it handles everything: management, data encryption, and security.<p>
+                            <ul>
+                                <li><strong>Pros:</strong> Simple for very small home offices.</li>
+                                <li><strong>Cons:</strong> Scalability is a nightmare. If you want to change a Wi-Fi password on 20 APs, you have to log into each one individually.</li>
+                            </ul>
+                            <h3><strong>B. Centralized (WLC-based) Architecture</strong></h3>
+                            <p>This is the heart of the CCNA curriculum. Here, we use <b>Lightweight Access Points (LAPs)</b> and a <b>Wireless LAN Controller (WLC)</b>. This uses the <b>Split-MAC Architecture</b>:<p>
+                            <ul>
+                                <li>- <strong>LAP:</strong> Handles real-time tasks (beacons, probing, encryption).<li>
+                                <li>- <strong>WLC:</strong> Handles management tasks (authentication, roaming, RRM).</li>
+                                <li>- <strong>CAPWAP Tunnel:</strong> The AP and WLC communicate via Control and Provisioning of Wireless Access Points (CAPWAP) tunnels.</li>
+                                <li>- <strong>Control Port (UDP 5246):</strong> For management traffic.</li>
+                                <li>- <strong>Data Port (UDP 5247):</strong> Encapsulates user data.</li>
+                            </ul>
+
+                            <h3><strong>C. Cloud-based (Cisco Meraki)</strong></h3>
+                            <p>Management is moved to the cloud. The APs connect to the Meraki Dashboard via the internet. Data stays local, but the "Control Plane" is in the cloud.</p>
+
+                            <h3><strong>D. Embedded/Mobility Express</strong></h3>
+                            <p>The WLC software actually runs on one of the APs itself. This is great for small-to-medium businesses that want the features of a controller without buying a separate physical appliance.</p>
+
+                            <h3><strong>2. Lightweight Access Point (LAP) Modes</strong></h3>
+                            <p>When an AP is connected to a controller, it can function in different "modes" depending on what you need it to do.</p>
+
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Mode</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Local</strong></td>
+                                        <td>The default mode. It serves clients and scans the environment for interference/rogues every 180 seconds.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>FlexConnect</strong></td>
+                                        <td>Used for branch offices over a WAN. If the connection to the WLC drops, the AP can still switch traffic locally.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Monitor</strong></td>
+                                        <td>The AP does not serve clients. It acts as a dedicated sensor for Location Services (RFID) and Intrusion Detection (IDS).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Sniffer</strong></td>
+                                        <td>The AP captures all wireless traffic on a specific channel and forwards it to a PC running Wireshark.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Rogue Detector</strong></td>
+                                        <td>The AP listens for MAC addresses on the wired network and correlates them with "rogue" wireless devices.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Bridge / Mesh</strong></td>
+                                        <td>Used to connect two buildings wirelessly (Point-to-Point or Point-to-Multipoint).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>SE-Connect</strong></td>
+                                        <td>Dedicated to Spectrum Analysis. It looks for non-Wi-Fi interference like microwaves or Bluetooth.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h3><strong>3. Basic Configuration Commands</strong></h3>
+                            <p>If you are logged into a Cisco IOS-based Lightweight AP, you might need to check its status or point it toward a controller.</p>
+                            <pre>To see the current mode and WLC info:\n<code>show capwap client status</code>\n<code>show capwap client config</code>\n\nTo manually tell a "blank" AP where its controller is (High Availability/Primary setup):\n<code>capwap ap primary-base WLC-NAME 192.168.10.5</code></pre>
+                            <p>If you need to change the mode of an AP from the WLC’s CLI:</p>
+                            <pre># Example: Changing an AP to Sniffer mode\n<code>config ap mode sniffer "AP_NAME"</code></pre>
+
+
+                            <h3><strong>Summary for the Exam</strong></h3>
+                            <ul>
+                                <li>- <strong>Autonomous</strong>= Standalone management.</li>
+                                <li>- <strong>Lightweight</strong>= Split-MAC (LAP + WLC).</li>
+                                <li>- <strong>CAPWAP</strong>= The "glue" (UDP 5246/5247).</li>
+                                <li>- <strong>Local Mode</strong>= Normal client operation.</li>
+                                <li>- <strong>FlexConnect</strong>= Branch office survival.</li>
+                            </ul>
                         `
                     },
                     {
