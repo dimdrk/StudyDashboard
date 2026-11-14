@@ -1669,6 +1669,78 @@
                         summary: "WLAN creation, security, QoS profiles",
                         content: `
                             <h3><strong>1. WLAN Creation: The "General" Tab</strong></h3>
+                            <p>The General tab defines the identity of your wireless network.</p>
+                            <ul>
+                                <li><strong>Profile Name:</strong> An administrative name used to identify the WLAN within the controller.</li>
+                                <li><strong>SSID (Service Set Identifier):</strong> This is the actual name broadcasted into the air that users see on their devices.</li>
+                                <li><strong>Status:</strong> A simple but critical checkbox. If this isn't checked, the WLAN is disabled.</li>
+                                <li><strong>Radio Policy:</strong> This determines which frequencies the SSID uses (e.g., 2.4GHz, 5GHz, or All).</li>
+                                <li><strong>Interface/Interface Group:</strong> This maps the wireless traffic to a specific <strong>VLAN</strong> on the wired side.</li>
+                            </ul>
+                            <h3><strong>2. Security: The "Security" Tab</strong></h3>
+                            <p>This is where we decide how users prove they are allowed on the network. It is usually split into three sub-tabs:</p>
+                            <h3><strong>Layer 2 Security</strong></h3>
+                            <ul>
+                                <li><strong>WPA2/WPA3:</strong> The current industry standard.</li>
+                                <li><strong>Auth Key Management (AKM):</strong><li>
+                                <ul>
+                                    <li>- <strong>PSK (Pre-Shared Key):</strong> Home-style security where everyone uses the same password.</li>
+                                    <li>- <strong>802.1X:</strong> Enterprise security. Users authenticate via a RADIUS server (like Cisco ISE) using their own credentials.</li>
+                                </ul>
+                                <li><strong>Encryption:</strong> Typically <strong>AES (CCMP)</strong>. Legacy TKIP is now considered insecure.</li>
+                            </ul>
+
+                            <h3><strong>Layer 3 Security</strong></h3>
+                            <ul>
+                                <li><strong>Web Policy:</strong> Used for <strong>Guest Portals</strong>. If you’ve ever had to "Accept Terms and Conditions" at a coffee shop or hotel, that is Layer 3 security.</li>
+                            </ul>
+
+                            <h3><strong>3. QoS Profiles: The "QoS" Tab</strong></h3>
+                            <p>Quality of Service (QoS) ensures that important traffic (like a Zoom call) gets priority over less important traffic (like a file download). Cisco uses four standard profiles:</p>
+
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Profile</th>
+                                        <th>Traffic Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Platinum</strong></td>
+                                        <td>Voice</td>
+                                        <td>Highest priority; low latency for VoIP.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Gold</strong></td>
+                                        <td>Video</td>
+                                        <td>High priority; supports video applications.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Silver</strong></td>
+                                        <td>Best Effort</td>
+                                        <td><strong>Default.</strong> Normal data traffic.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Bronze</strong></td>
+                                        <td>Background</td>
+                                        <td>Lowest priority; for guest access or large downloads.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h3><strong>CLI Verification (The "CCNA Way")</strong></h3>
+                            <p>Even though we use the GUI, a CCNA must know how to verify these settings via the command line.<br>If you were to check your WLAN configuration on a Cisco Catalyst 9800 WLC, you would use:</p>
+
+                            <pre># View all configured WLANs\nSwitch# <code>show wlan summary</code>\n\n# View specific details for WLAN ID 1 (Security, SSID, QoS)\nSwitch# <code>show wlan id 1</code>\n\n# Check the status of the wireless radios\nSwitch# <code>show controllers dot11Radio 0 summary</code></pre>
+                            
+                            <h3><strong>Pro-Tip for the Exam</strong></h3>
+                            <p>Keep in mind the <strong>"Three Pillars of Connectivity"</strong> for a client to successfully join a WLAN:
+                            <ul>
+                                <li>1. <strong>VLAN Mapping:</strong> The WLAN must be mapped to a valid, active VLAN/Interface.</li>
+                                <li>2. <strong>Broadcast:</strong> The SSID must be enabled.</li>
+                                <li>3. <strong>Security Match:</strong> The client's security settings (WPA2/WPA3) must match the WLC's configuration exactly.</li>
                         `
                     },
                     {
@@ -1681,6 +1753,85 @@
                             <p><strong>VTP</strong> synchronizes VLAN databases across switches (VTP Client, Server, Transparent, and VTPv3).</p>
                             <p>Both <strong>VTP</strong> and <strong>DTP</strong> are Cisco proprietary protocols designed to automate the management of VLANs and trunks.</p>
                             <p>However, in modern networking, they come with a few "warnings" that every engineer should know.</p>
+
+                            <h3><strong>1. VTP (VLAN Trunking Protocol)</strong></h3>
+                            <p>VTP allows a network administrator to manage VLANs (add, delete, or rename) on a single "Server" switch, and have those changes propagate automatically to all other switches in the same VTP domain.</p>
+                            <h3><strong>VTP Modes</strong></h3>
+                            <ul>
+                                <li><strong>Server:</strong> The default mode. You can create/modify/delete VLANs. It saves the VLAN database in NVRAM.</li>
+                                <li><strong>Client:</strong> Cannot change the VLAN database. It receives updates from the Server and passes them along.</li>
+                                <li><strong>Transparent:</strong> It doesn't participate in the domain updates but *does* forward VTP advertisements. It’s used when you want a switch to have its own local VLANs that don't affect others.</li>
+                                <li><strong>Off:</strong> Newer versions of VTP allow you to disable the protocol entirely.</li>
+                            </ul>
+
+                            <h3><strong>The "VTP Revision Number" Danger</strong></h3>
+                            <p>This is a classic CCNA exam topic! Every time you change a VLAN, the <strong>Configuration Revision Number</strong> increases.<br>If you plug in an old switch with a *higher* revision number into your network, it can overwrite your entire VLAN database, potentially deleting all your production VLANs.</p>
+                            <p><strong>Pro Tip:</strong> Always reset the revision number to 0 before adding a switch to the network by changing its VTP domain to a dummy name and then back, or by switching it to Transparent mode and back to Client/Server.</p>
+
+                            <h3><strong>Configuration Syntax</strong></h3>
+                            <pre># Set the VTP Domain\nSwitch(config)# <code>vtp domain MyNetwork</code>\n\n# Set a VTP Password (for security)\nSwitch(config)# <code>vtp password CiscoPass</code>\n\n# Choose the mode\nSwitch(config)# <code>vtp mode server</code>\n\n# Check the status\nSwitch# <code>show vtp status</code></pre>
+
+                            <h3><strong>2. DTP (Dynamic Trunking Protocol)</strong></h3>
+                            <p>DTP manages the negotiation of a trunk link between two Cisco switches. It decides whether an interface will become an <strong>Access port</strong> or a <strong>Trunk port</strong>.</p>
+                            <h3><strong>Interface Modes</strong></h3>
+                            <ul>
+                                <li><strong>Access:</strong> Forces the port to be a non-trunking port.</li>
+                                <li><strong>Trunk:</strong> Forces the port to be a trunk and negotiates with the other side.</li>
+                                <li><strong>Dynamic Auto:</strong> The port is willing to become a trunk if the other side asks. It is "passive."</li>
+                                <li><strong>Dynamic Desirable:</strong> The port actively asks the other side to become a trunk.</li>
+                            </ul>
+                            
+                            <h3><strong>The Negotiation Matrix</strong></h3>
+                            <ul>
+                                <li><strong>Auto + Auto</strong> = Access (Neither side starts the conversation).</li>
+                                <li><strong>Auto + Desirable</strong> = Trunk.</li>
+                                <li><strong>Desirable + Desirable</strong> = Trunk.</li>
+                                <li><strong>Trunk + (Auto or Desirable)</strong> = Trunk.</li>
+                            </ul>
+
+                            <h3><strong>Best Practice: Disable It!</strong></h3>
+                            <p>In a production environment, DTP is often seen as a security risk (VLAN hopping attacks).<br>Best practice is to statically configure ports and turn off negotiation.</p>
+
+                            <h3><strong>Configuration Syntax</strong></h3>
+                            <pre># To manually set a trunk and disable DTP\nSwitch(config-if)# <code>switchport mode trunk</code>\nSwitch(config-if)# <code>switchport nonegotiate</code>\n\n# To set a port to Dynamic Desirable\nSwitch(config-if)# <code>switchport mode dynamic desirable</code>\n\n# Verify the DTP status\nSwitch# <code>show dtp interface gig0/1</code></pre>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Comparison:</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>VTP</th>
+                                        <th>DTP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Full Name</strong></td>
+                                        <td>VLAN Trunking Protocol</td>
+                                        <td>Dynamic Trunking Protocol</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Purpose</strong></td>
+                                        <td>Syncs VLAN database (VLAN 10, 20, etc.)</td>
+                                        <td>Negotiates if a link is a Trunk or Access</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Scope</strong></td>
+                                        <td>Domain-wide</td>
+                                        <td>Link-by-link</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Major Risk</strong></td>
+                                        <td>Overwriting the VLAN database</td>
+                                        <td>Security (unauthorized trunking)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p><strong>Tutor Note:</strong> If you are preparing for the CCNA exam, remember that <strong>VTP requires a Trunk link</strong> to work!<br>VTP advertisements travel over trunks using DTP or static configurations to exist.</p>
+
                         `
                     }
                 ]
