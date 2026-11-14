@@ -1466,13 +1466,221 @@
                     },
                     {
                         id: "2.8",
-                        title: "2.8 VTP & DTP Protocols",
-                        summary: "VLAN Trunking Protocol, Dynamic Trunking Modes, Security Risks",
+                        title: "2.8 Describe physical infrastructure connections of WLAN components",
+                        summary: "AP, WLC, access/trunk ports, and LAG",
                         content: `
-                            <h3>1. VTP Modes & Revision Number Warning</h3>
-                            <p>Server, Client, Transparent, Off. High VTP revision numbers can overwrite production VLAN databases!</p>
-                            <h3>2. DTP Negotiation Modes</h3>
-                            <p>Dynamic Auto + Dynamic Auto = Access. Best practice: Disable DTP with <code>switchport nonegotiate</code>.</p>
+                            <h3><strong>1. Access Points (APs)</strong></h3>
+                            <p>The AP is the bridge between the wireless airwaves and the wired Ethernet.</p>
+                            <ul>
+                                <li><strong>Physical Connection:</strong> APs connect via standard Category 5e or 6 cables to an Access Layer switch.</li>
+                                <li><strong>Power:</strong> Most APs are powered via <strong>PoE (Power over Ethernet)</strong>. This means the switchport provides both data and electricity, removing the need for a DC power adapter at the ceiling.</li>
+                                <li><strong>Port Configuration:</strong></li>
+                                <li>- <strong>Local Mode (Default):</strong> The AP typically connects to an <strong>Access Port</strong>. All wireless traffic is encapsulated in a CAPWAP tunnel and sent to the WLC.</li>
+                                <li>- <strong>FlexConnect Mode:</strong> If the AP needs to drop traffic directly onto the local VLAN (common in branch offices), the switchport is often configured as a <strong>Trunk Port</strong>.</li>
+                            </ul>
+
+                            <h3><strong>Example:</strong> Switchport for an AP in Local Mode:</h3>
+                            <pre>Switch# <code>Configure Terminal</code>\nSwitch(config)# <code>interface GigabitEthernet1/0/1</code>\nSwitch(config-if)# <code>description AP-RECEPTION</code>\nSwitch(config-if)# <code>switchport mode access</code>\nSwitch(config-if)# <code>switchport access vlan 10</code> # The Management VLAN for the AP\nSwitch(config-if)# <code>spanning-tree portfast</code>    # Speeds up to forwarding state\nSwitch(config-if)# <code>exit</code></pre>
+
+                            <h3><strong>2. Wireless LAN Controller (WLC)</strong></h3>
+                            <p>The WLC is the "brain" that manages multiple APs.</p>
+                            <ul>
+                                <li><strong>Physical Connection:</strong> The WLC connects to the Core or Distribution layer switches. It usually has multiple 1G or 10G interfaces.</li>
+                                <li><strong>Port Type:</strong> WLC ports are almost always <strong>Trunk Ports</strong>. Since a single WLC might manage multiple SSIDs (e.g., Guest, Corporate, IoT), and each SSID maps to a different VLAN, the trunk allows that multi-VLAN traffic to flow over a single physical link.</li>
+                            </ul>
+
+                            <h3><strong>3. Link Aggregation (LAG)</strong></h3>
+                            <p>Because a WLC handles traffic for hundreds of APs, a single 1Gbps link often becomes a bottleneck. We use <strong>LAG</strong> to bundle multiple physical ports into one logical "pipe."</p>
+                            <ul>
+                                <li><strong>Redundancy:</strong> If one cable fails, the WLC stays online.</li>
+                                <li><strong>Throughput:</strong> It combines the bandwidth of all ports in the group.</li>
+                                <li><strong>Cisco WLC Specifics:</strong> On many Cisco WLCs, LAG is an "all or nothing" setting. When enabled, all distribution ports on the WLC are bundled into a single logical interface.<br>Older WLCs use static EtherChannel (mode on), but modern Cisco Catalyst 9800 series Wireless LAN Controllers fully support standard LACP (Active/Passive) depending on the deployment model.</li>
+                            </ul>
+
+                            <h3><strong>4. Putting it Together: Configuration Example</strong></h3>
+                            <p>Imagine you are connecting a WLC to a switch using two physical ports (Gig 1/0/10 and 1/0/11) for better performance and redundancy.</p>
+
+                            <h3><strong>Switch Side (Configuring the EtherChannel/LAG):</strong></h3>
+                            <pre># Create the Port-channel interface\nSwitch# <code>Configure Terminal</code>\nSwitch(config)# <code>interface Port-channel 1</code>\nSwitch(config-if)# <code>description Uplink-to-WLC</code>\nSwitch(config-if)# <code>switchport mode trunk</code>\nSwitch(config-if)# <code>switchport trunk allowed vlan 10,20,30</code>\nSwitch(config-if)# <code>exit</code>\n\n# Assign physical interfaces to the group\nSwitch(config)# <code>interface range GigabitEthernet 1/0/10 - 11</code>\nSwitch(config-if-range)# <code>channel-group 1 mode on</code>\nSwitch(config-if-range)# <code>description Member-links-to-WLC</code></pre>
+
+                            <h3><strong>WLC Side:</strong></h3>
+                            <ul>
+                                <li>1.  Log into the WLC GUI.</li>
+                                <li>2.  Navigate to <strong>Controller > General</strong>.</li>
+                                <li>3.  Set <strong>LAG Mode on Next Reboot</strong> to <strong>Enabled</strong>.</li>
+                                <li>4.  Save and Reboot.</li>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table for the CCNA Exam</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Port Mode</th>
+                                        <th>Purpose</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>AP (Local Mode)</strong></td>
+                                        <td>Access</td>
+                                        <td>AP Management (CAPWAP tunnel carries user data).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>AP (FlexConnect)</strong></td>
+                                        <td>Trunk</td>
+                                        <td>Allows AP to switch user data locally to specific VLANs.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>WLC Interface</strong></td>
+                                        <td>Trunk</td>
+                                        <td>Carries multiple VLANs representing different SSIDs.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>LAG (EtherChannel)</strong></td>
+                                        <td>Static "On"</td>
+                                        <td>Provides bandwidth aggregation and redundancy for the WLC</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        `
+                    },
+                    {
+                        id: "2.9",
+                        title: "2.9 Describe network device management access",
+                        summary: "Telnet, SSH, HTTP, HTTPS, console, TACACS+/RADIUS, and cloud managed",
+                        content: `
+                            <h3><strong>1. Console (Out-of-Band)</strong></h3>
+                            <p>The **Console port** is your "emergency" or "day zero" access. It requires a physical cable (usually a RJ-45 to DB-9 or USB) connected directly from your laptop to the device.</p>
+                            <ul>
+                                <li><strong>Why use it?</strong> It doesn't require the device to have an IP address or working network interface. It is used for initial configuration or if you accidentally lock yourself out via a bad firewall rule.</li>
+                                <li><strong>Security Tip:</strong> Since it requires physical access, the "security" is often the locked door of the server room.</li>
+                            </ul>
+
+                            <h3><strong>Basic Console Configuration:</strong></h3>
+                            <pre>Router(config)# <code>line console 0</code>\nRouter(config-line)# <code>password cisco</code>\nRouter(config-line)# <code>login</code>\nRouter(config-line)# <code>exit</code></pre>
+
+                            <h3><strong>2. Telnet (In-Band)</strong></h3>
+                            <p>Telnet is a legacy protocol used for remote CLI access over a network.</p>
+                            <ul>
+                                <li><strong>Port:</strong> TCP 23</li>
+                                <li><strong>The Danger:</strong> Telnet sends everything in <strong>cleartext</strong>, including your username and password. Anyone with a packet sniffer (like Wireshark) on the path can steal your credentials.</li>
+                                <li><strong>CCNA Advice:</strong> Never use Telnet in a production environment.</li>
+                            </ul>
+
+                            <h3><strong>3. SSH - Secure Shell (In-Band)</strong></h3>
+                            <p>SSH is the industry standard for remote CLI access. It provides the same functionality as Telnet but adds strong <strong>encryption</strong>.
+                            <ul>
+                                <li><strong>Port:</strong> TCP 22</li>
+                                <li><strong>Requirements:</strong> You must have a hostname, a domain name, and generated RSA keys.</li>
+                            </ul>
+                            <h3><strong>Configuring SSH on a Cisco Device:</strong></h3>
+                            <pre>Router(config)# <code>hostname R1</code>\nR1(config)# <code>ip domain-name lab.local</code>\nR1(config)# <code>crypto key generate rsa</code>  # Choose 1024 or higher\nR1(config)# <code>username admin privilege 15 secret Cisco123</code>\nR1(config)# <code>line vty 0 15</code>\nR1(config-line)# <code>transport input ssh</code>\nR1(config-line)# <code>login local</code>\nR1(config-line)# <code>exit</code></pre>
+
+                            <h3><strong>4. HTTP and HTTPS (In-Band GUI)</strong></h3>
+                            <p>While CLI is king for engineers, many devices (especially Wireless LAN Controllers and modern Firewalls) offer a Graphical User Interface (GUI).</p>
+                            <ul>
+                                <li><strong>HTTP (Port 80):</strong> Unencrypted and insecure.</li>
+                                <li><strong>HTTPS (Port 443):</strong> Encrypted via SSL/TLS.</li>
+                                <li><strong>Usage:</strong> Used for SD-WAN controllers or simple web-interface management for small business switches.</li>
+                            </ul>
+                            <pre>Router(config)# <code>ip http server</code>         # Enables HTTP (Insecure)\nRouter(config)# <code>ip http secure-server</code>  # Enables HTTPS (Secure)</pre>
+
+                            <h3><strong>5. Centralized Authentication: TACACS+ and RADIUS</strong></h3>
+                            <p>Instead of creating a local username on every single switch (which is a nightmare to manage), we use AAA (Authentication, Authorization, and Accounting) servers.</p>
+                            <ul>
+                                <li><strong>TACACS+ (Terminal Access Controller Access-Control System):</strong></li>
+                                <li>- Cisco proprietary (mostly).</li>
+                                <li>- Uses <strong>TCP Port 49</strong>.</li>
+                                <li>- Encrypts the <strong>entire packet</strong>.</li>
+                                <li>- Separates Authentication, Authorization, and Accounting (more granular control).</li>
+                                <li><strong>RADIUS (Remote Authentication Dial-In User Service):</strong></li>
+                                <li>- Open Standard.</li>
+                                <li>- Uses <strong>UDP Ports 1812/1813</strong>.</li>
+                                <li>- Encrypts <strong>only the password</strong>.</li>
+                                <li>- Combines Authentication and Authorization.</li>
+                            </ul>
+
+                            <h3><strong>6. Cloud Managed</strong></h3>
+                            <p>This is the modern "Software as a Service" (SaaS) approach to networking.</p>
+                            <ul>
+                                <li><strong>Examples:</strong> Cisco Meraki or Cisco Catalyst Center (DNA Center) in the cloud.</li>
+                                <li><strong>How it works:</strong> The device (Switch, AP, or Firewall) "calls home" to a central dashboard on the internet via HTTPS.</li>
+                                <li><strong>Benefits:</strong> You can manage thousands of devices across the globe from a single web browser without needing a VPN or direct CLI access to every box.</li>
+                            </ul>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table for your Exam:</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Method</th>
+                                        <th>Port</th>
+                                        <th>Security</th>
+                                        <th>Best Use Case</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Console</strong></td>
+                                        <td>Physical</td>
+                                        <td>Physical Security</td>
+                                        <td>Initial setup/Recovery</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Telnet</strong></td>
+                                        <td>TCP 23</td>
+                                        <td>None (Cleartext)</td>
+                                        <td><strong>Avoid</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>SSH</strong></td>
+                                        <td>TCP 22</td>
+                                        <td>Encrypted</td>
+                                        <td>Standard remote management</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>HTTPS</strong></td>
+                                        <td>TCP 443</td>
+                                        <td>Encrypted</td>
+                                        <td>GUI/Web management</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>TACACS+</strong></td>
+                                        <td>TCP 49</td>
+                                        <td>Fully Encrypted</td>
+                                        <td>Enterprise-level device admin</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Cloud</strong></td>
+                                        <td>HTTPS</td>
+                                        <td>Encrypted</td>
+                                        <td>Centralized "Single Pane of Glass"</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        `
+                    },
+                    {
+                        id: "2.10",
+                        title: "2.10 Interpret the wireless LAN GUI configuration for client connectivity",
+                        summary: "WLAN creation, security, QoS profiles",
+                        content: `
+                            <h3><strong>1. WLAN Creation: The "General" Tab</strong></h3>
+                        `
+                    },
+                    {
+                        id: "2.11",
+                        title: "2.11 General",
+                        summary: "VTP (VLAN Trunking Protocol) & DTP (Dynamic Trunking Protocol)",
+                        content: `
+                            <p><strong>DTP</strong> handles automatic trunk negotiation (desirable, auto, on, off).</p>
+                            <p><strong>Best practice</strong>: Always hardcode trunks (switchport mode trunk) and turn off DTP (switchport nonegotiate).</p>
+                            <p><strong>VTP</strong> synchronizes VLAN databases across switches (VTP Client, Server, Transparent, and VTPv3).</p>
+                            <p>Both <strong>VTP</strong> and <strong>DTP</strong> are Cisco proprietary protocols designed to automate the management of VLANs and trunks.</p>
+                            <p>However, in modern networking, they come with a few "warnings" that every engineer should know.</p>
                         `
                     }
                 ]
