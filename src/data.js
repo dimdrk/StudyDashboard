@@ -1125,15 +1125,89 @@
                             <p>This confirms if the protocol is active and how often it sends updates.</p>
                             <pre>Router# <code>show cdp</code>\nRouter# <code>show lldp</code>\nRouter# <code>show cdp interface GigabitEthernet0/1</code></pre>
 
+                            <table>
+                                <caption>
+                                    <b>Key Comparison Table</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>CDP</th>
+                                        <th>LLDP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><b>Standard<b></td>
+                                        <td>Cisco Proprietary</td>
+                                        <td>IEEE 802.1AB (Open)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Default State<b></td>
+                                        <td>Enabled</td>
+                                        <td>Usually Disabled</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Interface Control<b></td>
+                                        <td>On/Off</td>
+                                        <td>Transmit/Receive separately</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Layer<b></td>
+                                        <td>Layer 2</td>
+                                        <td>Layer 2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p><strong>Pro-Tip:</strong> In a secure environment, always use <code>no cdp run</code> or <code>no lldp run</code> on interfaces connected to the internet or untrusted guest networks.<br>You don't want to hand out a map of your internal hardware to potential attackers!
                         `
                     },
                     {
                         id: "2.4",
-                        title: "2.4 EtherChannel Configuration (LACP)",
+                        title: "2.4 Configure and verify EtherChannel (LACP)",
                         summary: "Layer 2 & Layer 3 Bundles, Active vs Passive Modes",
                         content: `
-                            <pre><code># L2 LACP EtherChannel\nSwitch(config)# interface range gi0/1 - 2\nSwitch(config-if)# channel-group 1 mode active\nSwitch(config)# interface port-channel 1\nSwitch(config-if)# switchport mode trunk</code></pre>
-                            <p><strong>Modes:</strong> <code>active + active</code> (OK), <code>active + passive</code> (OK), <code>passive + passive</code> (FAILS).</p>
+                            <h3><strong>1. Layer 2 EtherChannel (Switchport)</strong></h3>
+                            <p>In a Layer 2 configuration, the bundled interfaces act as a single trunk or access port.</p>
+                            <p><strong>Scenario:</strong> We are bundling 'GigabitEthernet 0/1' and '0/2' into 'Port-channel 1'.</p>
+
+                            <pre>Switch# <code>configure terminal</code>\n\n# Select the range of physical interfaces\nSwitch(config)# <code>interface range gi0/1-2</code>\n\n# Ensure the settings match on both ends (Speed/Duplex)\nSwitch(config-if-range)# <code>speed 1000</code>\nSwitch(config-if-range)# <code>duplex full</code>\n\n# Assign the interfaces to a channel group using LACP (active)\nSwitch(config-if-range)# <code>channel-group 1 mode active</code>\nSwitch(config-if-range)# <code>exit</code>\n\n# Configure the logical Port-channel interface as a Trunk\nSwitch(config)# <code>interface port-channel 1</code>\nSwitch(config-if)# <code>switchport mode trunk</code>\nSwitch(config-if)# <code>switchport trunk allowed vlan 10,20,30</code>\nSwitch(config-if)# <code>exit</code></pre>
+
+                            <p><strong>Note:</strong> Use <code>mode active</code> to actively negotiate LACP. Use <code>mode passive</code> only if the other side is active.</p>
+
+                            <h3><strong>2. Layer 3 EtherChannel (Routed)</strong></h3>
+                            <p>In Layer 3 EtherChannel, we strip the "switchport" (Layer 2) capabilities from the interfaces and assign an IP address to the logical bundle. This is common in distribution-to-core links.</p>
+                            <p><strong>Scenario:</strong> Bundling 'GigabitEthernet 0/1' and '0/2' into 'Port-channel 10' with an IP address.</p>
+
+                            <pre>Switch# <code>configure terminal</code>\n\n# Select the range of physical interfaces\nSwitch(config)# <code>interface range gi0/1-2</code>\n\n# Turn off Layer 2 functionality (Make them routed ports)\nSwitch(config-if-range)# <code>no switchport</code>\n\n# Assign to a channel group\nSwitch(config-if-range)# <code>channel-group 10 mode active</code>\nSwitch(config-if-range)# <code>exit</code>\n\n# Configure the logical Port-channel interface\nSwitch(config)# <code>interface port-channel 10</code>\nSwitch(config-if)# <code>no switchport</code>\nSwitch(config-if)# <code>ip address 10.1.1.1 255.255.255.252</code>\nSwitch(config-if)# <code>exit</code></pre>
+
+                            <h3><strong>3. Verification Commands</strong></h3>
+                            <p>Verification is the most important part of the CCNA exam! Use these commands to ensure your EtherChannel is up and running.</p>
+                            <h3><strong>A. The Summary Command (The "Go-To")</strong></h3>
+                            <p>This shows the status of all bundles.</p>
+                            <pre>Switch# <code>show etherchannel summary</code></pre>
+                            <p><strong>Look for Flags:</strong> You want to see <strong>(SU)</strong> for Layer 2 (S = Layer 2, U = In Use) or <strong>(RU)</strong> for Layer 3 (R = Layer 3, U = In Use).<br><strong>Interface Flags:</strong> You want to see <strong>(P)</strong> next to the physical ports, meaning they are bundled in the Port-channel.</p>
+                            <h3><strong>B. Check LACP Specifics</strong></h3>
+                            <p>To see which neighbor your switch is talking to via LACP:</p>
+                            <pre>Switch# <code>show lacp neighbor</code></pre>
+                            <h3><strong>C. Interface Status</strong></h3>
+                            <p>To see the logical interface status:</p>
+                            <pre>Switch# <code>show interfaces port-channel 1</code></pre>
+
+                            <h3><strong>Key Reminders for the Exam:</strong></h3>
+                            <ul>
+                                <li><strong>Consistency is Key:</strong> All physical ports in the bundle must have the same speed, duplex, VTP mode, native VLAN, and allowed VLANs.</li>
+                                <li><strong>LACP Modes:</strong>
+                                    <ul>
+                                        <li>- 'Active' + 'Active' = <strong>Works</strong
+                                        ></li>
+                                        <li>- 'Active' + 'Passive' = <strong>Works</strong
+                                        ></li>
+                                        <li>- 'Passive' + 'Passive' = <strong>Fails</strong
+                                        > (Neither side will start negotiation)</li>
+                                    </ul>
+                                <li><strong>Spanning Tree:</strong> STP treats the entire Port-channel as one single interface, preventing loops while allowing you to use all physical bandwidth.</li>
+                            </ul>
                         `
                     },
                     {
