@@ -1845,11 +1845,72 @@
                         title: "3.1 Interpret the components of routing table",
                         summary: "Protocol code, Prefix, Network mask, Next hop, Administrative distance, Metric, Gateway of last resort",
                         content: `
-                            <h3>Default Administrative Distances (AD)</h3>
+                            <p>When you issue the command <code>show ip route</code> on a Cisco router, you get a wealth of information. Let's break down each component so you can read it like a pro.</p>
+
+                            <h3><strong>1. Protocol Code</strong></h3>
+                            <p>This is found at the very beginning of a route entry. It tells you <strong>how</strong> the router learned about this specific network.</p>
                             <ul>
-                                <li>Connected: <strong>0</strong> | Static: <strong>1</strong></li>
-                                <li>External BGP: <strong>20</strong> | Internal EIGRP: <strong>90</strong></li>
-                                <li>OSPF: <strong>110</strong> | RIP: <strong>120</strong> | External EIGRP: <strong>170</strong></li>
+                                <li><strong>L (Local):</strong> The specific IP assigned to the router's interface.</li>
+                                <li><strong>C (Connected):</strong> A network directly attached to an interface.</li>
+                                <li><strong>S (Static):</strong> A route manually configured by an administrator.</li>
+                                <li><strong>D (EIGRP):</strong> Learned via the Enhanced Interior Gateway Routing Protocol.</li>
+                                <li><strong>O (OSPF):</strong> Learned via the Open Shortest Path First protocol.</li>
+                                <li><strong>B (BGP):</strong> Learned via Border Gateway Protocol.</li>
+                            </ul>
+
+                            <h3><strong>2. Prefix and Network Mask</strong></h3>
+                            <p>This is the destination network address.</p>
+                            <ul>
+                                <li><strong>Prefix:</strong> The network ID (e.g., '192.168.10.0').</li>
+                                <li><strong>Network Mask:</strong> Usually shown in CIDR notation (e.g., '/24'), it tells the router which part of the IP address is the network portion and which is the host portion</li>
+                            </ul>
+
+                            <h3><strong>3. Administrative Distance (AD)</strong></h3>
+                            <p>This is the <strong>trustworthiness</strong> of the route source. If a router learns about the same network from two different protocols, it chooses the one with the <strong>lower</strong> AD.</p>
+                            <ul>
+                                <li>Directly Connected:<strong>  0</strong></li>
+                                <li>Static Route:<strong> 1</strong></li>
+                                <li>External BGP:<strong> 20</strong></li>
+                                <li>EIGRP:<strong> 90</strong></li>
+                                <li>OSPF:<strong> 110</strong></li>
+                                <li>RIP:<strong> 120</strong></li>
+                                <li>External EIGRP:<strong> 170</strong></li>
+                                <li>Internal BGP(iBGP):<strong> 200</strong></li>
+                            </ul>
+
+                            <h3><strong>4. Metric</strong></h3>
+                            <p>If there are multiple paths to the same destination learned via the <strong>same protocol</strong>, the router uses the Metric to decide which path is better. A <strong>lower</strong> metric is always preferred.</p>
+                            <ul>
+                                <li>In <strong>RIP</strong>, the metric is Hop Count.</li>
+                                <li>In <strong>OSPF</strong>, the metric is Cost (based on bandwidth).</li>
+                                <li>In <strong>EIGRP</strong>, the metric is a complex calculation based on Bandwidth and Delay.</li>
+                            </ul>
+
+                            <h3><strong>5. Next Hop</strong></h3>
+                            <p>This is the IP address of the next router in the path. It tells the router, "To get to that destination, hand the packet to this neighbor."<br>If the destination is a directly connected network, you might see "is directly connected" instead of an IP address.</p>
+
+                            <h3><strong>6. Gateway of Last Resort</strong></h3>
+                            <p>In a routing table, you will often see the line: <code>Gateway of last resort is 10.1.1.1 to network 0.0.0.0</code>.<br>This is the <code>Default Route</code>. If a packet's destination doesn't match any specific entry in the routing table, the router sends it here.<br>Without this, the router would simply drop the packet.</p>
+
+                            <h3><strong>Anatomic Example of a Route Entry</strong></h3>
+                            <p>Let's look at a single line from a routing table and decode it:</p>
+                            <pre><code>D    192.168.20.0/24 [90/3072] via 10.1.1.2, 00:00:12, GigabitEthernet0/1</code></pre>
+                            <ul>
+                                <li><strong>D</strong>: Protocol code (EIGRP).</li>
+                                <li><strong>192.168.20.0/24</strong>: The destination Prefix and Mask.</li>
+                                <li><strong>90</strong>: Administrative Distance.</li>
+                                <li><strong>3072</strong>: The Metric (Cost).</li>
+                                <li><strong>10.1.1.2</strong>: The Next Hop IP address.</li>
+                                <li><strong>00:00:12</strong>: How long the router has known about this route (uptime).</li>
+                                <li><strong>GigabitEthernet0/1</strong>: The exit interface on the local router.</li>
+                            </ul>
+
+                            <h3><strong>Pro-Tip for the CCNA Exam:</strong></h3>
+                            <p>Remember the selection logic!</p>
+                            <ul>
+                                <li>1.  <strong>Longest Match:</strong>The router first looks for the most specific mask (e.g., a /28 is preferred over a /24).</li>
+                                <li>2.  <strong>Administrative Distance:</strong> If the masks are the same, it picks the lowest AD.</li>
+                                <li>3.  <strong>Metric:</strong> If the AD is the same, it picks the lowest Metric.</li>
                             </ul>
                         `
                     },
