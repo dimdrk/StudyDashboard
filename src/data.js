@@ -2323,29 +2323,230 @@
                     },
                     {
                         id: "4.3",
-                        title: "4.3 DHCP & DNS Roles",
+                        title: "4.3 Explain the role of DHCP and DNS within the network",
                         summary: "DHCP DORA Process, DNS Records (A, AAAA, CNAME, MX)",
                         content: `
-                            <p><strong>DORA:</strong> Discover (Broadcast), Offer (Unicast), Request (Broadcast), ACK (Unicast).</p>
+                            <p>In the world of networking, <strong>DHCP</strong> and <strong>DNS</strong> are like the "infrastructure heroes" that make the internet usable for humans and manageable for administrators.<br>Think of it this way: <strong>DHCP gives you an address, and DNS tells you where everyone else lives.</strong>
+                            
+                            <h3><strong>1. DHCP (Dynamic Host Configuration Protocol)</strong></h3>
+                            <p>DHCP’s primary role is to <strong>automatically assign IP addresses</strong> and other network configuration parameters to devices as they join a network.<br>Without DHCP, you would have to manually type an IP address, subnet mask, and gateway into every single phone, laptop, and IoT device in your building!</p>
+                            
+                            <h3><strong>The DORA Process</strong></h3>
+                            <p>DHCP operates using a four-step handshake known as <strong>DORA</strong>:</p>
+                            <ul>
+                                <li>1. <strong>Discover:</strong> The client broadcasts a message looking for a DHCP server.</li>
+                                <li>2. <strong>Offer:</strong> The server responds with an available IP address.</li>
+                                <li>3. <strong>Request:</strong> The client says, "I'll take that address, please!"</li>
+                                <li>4. <strong>Acknowledge (ACK):</strong> The server confirms and the client starts using the IP.</li>
+                            </ul>
+                            
+                            <h3><strong>Cisco IOS Configuration</strong></h3>
+                            <p>On a Cisco router, you can set it up to act as a DHCP server like this:</p>
+                            <pre># Exclude addresses you don't want to hand out (like your Gateway or Servers)\nRouter(config)# <code>ip dhcp excluded-address 192.168.1.1 192.168.1.10</code>\n\n# Create the DHCP pool\nRouter(config)# <code>ip dhcp pool MY_LAN</code>\nRouter(dhcp-config)# <code>network 192.168.1.0 255.255.255.0</code>\nRouter(dhcp-config)# <code>default-router 192.168.1.1</code>\nRouter(dhcp-config)# <code>dns-server 8.8.8.8</code>\nRouter(dhcp-config)# <code>lease 0 24 0</code>  # Lease for 0 days, 24 hours, 0 mins</pre>
+                            
+                            <h3><strong>2. DNS (Domain Name System)</strong></h3>
+                            <p>DNS is often called the <strong>"Phonebook of the Internet."</strong> Computers communicate using numbers (IP addresses), but humans are much better at remembering names (like 'google.com').<br>DNS resolves a <strong>Hostname</strong> (FQDN) into an <strong>IP Address</strong>.</p>
+                            <h3><strong>Common DNS Record Types</strong></h3>
+                            <ul>
+                                <li><strong>A Record:</strong> Maps a hostname to an IPv4 address.</li>
+                                <li><strong>AAAA Record:</strong> Maps a hostname to an IPv6 address.</li>
+                                <li><strong>CNAME:</strong> An alias (e.g., mapping 'www.example.com' to 'example.com').</li>
+                                <li><strong>MX Record:</strong> Directs email to a mail server.</li>
+                            </ul>
+                            
+                            <h3><strong>How a Router uses DNS</strong></h3>
+                            <p>A Cisco router often needs DNS to resolve hostnames for pings or software updates. <br>You can configure it to use a specific DNS server (like Google's 8.8.8.8) or even act as a very basic DNS lookup tool itself.</p>
+                            <pre># Tell the router to use a specific DNS server\nRouter(config)# <code>ip name-server 8.8.8.8</code>\n\n# Enable DNS lookup (usually on by default)\nRouter(config)# <code>ip domain-lookup</code>\n\n# Test it by pinging a name instead of an IP\nRouter# <code>ping google.com</code></pre>
+                            
+                            <h3><strong>How They Work Together</strong></h3>
+                            <p>These two protocols have a "best friend" relationship:</p>
+                            <ul>
+                                <li><strong>DHCP provides the DNS Info:</strong> When a device gets its IP address via DHCP, the DHCP server also tells it:<br>"By the way, if you need to look up a website, use the DNS server at 8.8.8.8."</li>
+                                <li><strong>Network Connectivity:</strong> Once the device has an IP (from DHCP), it can send a request to the name server (DNS) to find out the IP of the website you want to visit.</li>
+                            </ul>
+
+                            <table>
+                                <caption>
+                                    <b>Quick Comparison Table</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>DHCP</th>
+                                        <th>DNS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Purpose</strong></td>
+                                        <td>Assigns IP addresses to local hosts</td>
+                                        <td>Translates names to IP addresses</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Protocol/Port</strong></td>
+                                        <td>UDP 67 (Server), UDP 68 (Client)</td>
+                                        <td>UDP 53 (Queries), TCP 53 (Zone Transfers)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Analogy</strong></td>
+                                        <td>A hotel clerk giving you a room key</td>
+                                        <td>A GPS finding a street address by name</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         `
                     },
                     {
                         id: "4.4",
-                        title: "4.4 SNMP & Network Monitoring",
+                        title: "4.4 Explain the function of SNMP in network operations",
                         summary: "NMS, Agent, MIB, OIDs, SNMPv3 Encryption & Traps",
                         content: `
-                            <p>SNMPv3 adds <strong>AuthNoPriv</strong> and <strong>AuthPriv</strong> (Encryption + Hashing) to secure SNMP commands.</p>
+                            <p><strong>SNMP (Simple Network Management Protocol)</strong> is vital because it acts as the "eyes and ears" of a network administrator.<br>In short, SNMP allows you to monitor and manage network devices (routers, switches, firewalls, and servers) from a central location.</p>
+                            
+                            <h3><strong>1. The Core Components</strong></h3>
+                            <p>SNMP operates using a manager-agent model:</p>
+                            <ul>
+                                <li><strong>SNMP Manager (NMS):</strong> This is the central server (like SolarWinds, PRTG, or Cisco DNA Center) that polls devices for information and displays it on a dashboard.</li>
+                                <li><strong>SNMP Agent:</strong> This is the software running on the network device (e.g., your Cisco ISR router) that collects data about the device's status.</li>
+                                <li><strong>MIB (Management Information Base):</strong> Think of this as a structured database or a "menu" of items the agent can report on (like CPU usage, interface status, or uptime).</li>
+                                <li><strong>OID (Object Identifier):</strong> These are the specific addresses within the MIB. For example, there is a specific OID for "Interface GigabitEthernet0/0 Status."</li>
+                            </ul>
+                            
+                            <h3><strong>2. How it Works (Common Operations)</strong></h3>
+                            <p>SNMP isn't just for reading data; it can also send alerts or even change configurations.</p>
+                            <ul>
+                                <li><strong>Get Request:</strong> The Manager asks the Agent for a specific value (e.g., "What is your CPU utilization?").</li>
+                                <li><strong>Set Request:</strong> The Manager tells the Agent to change a variable (e.g., "Shut down interface FastEthernet0/1").</li>
+                                <li><strong>Trap:</strong> This is an <strong>unsolicited</strong> message sent by the Agent to the Manager. If a link goes down, the Agent doesn't wait to be asked; it sends a "Trap" immediately to alert the admin.</li>
+                                <li><strong>Inform:</strong> Similar to a Trap, but the Manager must acknowledge receipt. If the Agent doesn't get an ACK, it resends the message.</li>
+                            </ul>
+                            
+                            <h3><strong>3. Understanding the Versions</strong></h3>
+                            <p>When configuring SNMP, you must choose a version. In modern networks, <strong>v3</strong> is the only one recommended for production.</p>
+                            <ul>
+                                <li><strong>SNMPv1:</strong> The original version. Uses "Community Strings" (clear-text passwords) for authentication. Very insecure.</li>
+                                <li><strong>SNMPv2c:</strong> Improved performance and error handling, but still uses clear-text Community Strings.</li>
+                                <li><strong>SNMPv3:</strong> The gold standard. It adds <strong>Encryption</strong> (Privacy) and <strong>Authentication</strong> (Hashing), ensuring that hackers cannot sniff your management traffic or spoof your NMS.</li>
+                            </ul>
+                            
+                            <h3><strong>4. Basic Configuration (Cisco IOS)</strong></h3>
+                            <p>If you want to set up a basic SNMPv2c read-only community string on a Cisco router, the syntax is straightforward.</p>
+                            <h3><strong>Configuring SNMPv2c:</strong></h3>                            
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>snmp-server community MySecretPassword RO</code>\nRouter(config)# <code>snmp-server location DataCenter_Rack1</code>\nRouter(config)# <code>snmp-server contact Admin_John</code></pre>
+                            <h3><strong>Configuring an SNMP Trap (where to send alerts):</strong></h3>                            
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>snmp-server host 192.168.1.10 version 2c MySecretPassword</code>\nRouter(config)# <code>snmp-server enable traps</code></pre>
+                            
+                            <h3><strong>Why is this important for Network Ops?</strong></h3>
+                            <p>Without SNMP, you would have to manually SSH into every single router to check if an interface is down or if the memory is spiking. With SNMP, you get <strong>proactive monitoring</strong>.<br>You can set up graphs to see traffic trends over months, helping you with <strong>capacity planning</strong> (knowing when it's time to upgrade your bandwidth).</p>
                         `
                     },
                     {
                         id: "4.5",
-                        title: "4.5 Syslog Operations & Severity Levels",
+                        title: "4.5 Describe the use of syslog features, including facilities and severity levels",
                         summary: "Levels 0-7 Mnemonic: Every Awesome Cisco Engineer Will Need Ice Cream",
                         content: `
-                            <ol start="0">
-                                <li>Emergency | 1. Alert | 2. Critical | 3. Error</li>
-                                <li>Warning | 5. Notice | 6. Informational | 7. Debugging</li>
-                            </ol>
+                            <p>In the world of networking, Syslog is your "black box" recorder.<br>It is the standard protocol used by network devices to send event notifications and status messages to a local logging buffer or a centralized Syslog server.<br>To understand Syslog, we need to look at its two primary classification components: <strong>Severity Levels</strong> and <strong>Facilities</strong>.</p>
+                            
+                            <h3><strong>1. Syslog Severity Levels</strong></h3>
+                            <p>Severity levels tell you how urgent a message is. They range from <strong>0 (most critical)</strong> to <strong>7 (least critical/informational)</strong>.</p>
+                            <p>When you configure a logging level on a Cisco router, the device will log that level <strong>plus everything numerically lower (more severe)</strong>.<br>For example, if you set the logging level to 4 (Warnings), you will also see levels 3, 2, 1, and 0.</p>
+
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Level</th>
+                                        <th>Keyword</th>
+                                        <th>Description</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>0</strong></td>
+                                        <td>Emergency</td>
+                                        <td>System is unusable</td>
+                                        <td>Total "kernel panic" </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>1</strong></td>
+                                        <td>Alert</td>
+                                        <td>Immediate action needed</td>
+                                        <td>Temperature limit exceeded</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>2</strong></td>
+                                        <td>Critical</td>
+                                        <td>Critical conditions</td>
+                                        <td>Hardware failure (ASIC error)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>3</strong></td>
+                                        <td>Error</td>
+                                        <td>Error conditions</td>
+                                        <td>Interface going down</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>4</strong></td>
+                                        <td>Warning</td>
+                                        <td>Warning conditions</td>
+                                        <td>Configuration change/duplex mismatch</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>5</strong></td>
+                                        <td>Notice</td>
+                                        <td>Normal but significant</td>
+                                        <td>Interface coming up</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>6</strong></td>
+                                        <td>Informational</td>
+                                        <td>Informational messages</td>
+                                        <td>A user logged in via SSH</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>7</strong></td>
+                                        <td>Debugging</td>
+                                        <td>Debugging messages</td>
+                                        <td>Output from 'debug ip icmp'</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h3><strong>*Pro Tip for the Exam:</strong> Use this mnemonic to remember the order:</h3>
+                            <p>"<strong>E</strong>very <strong>A</strong>wesome <strong>C</strong>isco <strong>E</strong>ngineer <strong>W</strong>ill <strong>N</strong>eed <strong>I</strong>ce <strong>C</strong>ream"<br>(Emergency, Alert, Critical, Error, Warning, Notice, Informational, Debugging).</p>
+                            
+                            <h3><strong>2. Syslog Facilities</strong>:</h3>
+                            <p>While the severity tells you "how bad" the situation is, the <strong>Facility</strong> tells you "who" or "what" generated the message.<br>On a Cisco device, facilities identify the source of the message (e.g., the IP stack, OSPF, or a physical interface).<br>When sending logs to a remote Linux-based Syslog server, Cisco devices typically use the **local7** facility by default.</p>
+                            
+                            <h3><strong>Common Cisco facilities include:</strong>:</h3>
+                            <ul>
+                                <li><strong>LINK:</strong> Interface status changes.</li>
+                                <li><strong>OSPF:</strong> Routing protocol events.</li>
+                                <li><strong>SYS:</strong> System-level events (like a reload).</li>
+                                <li><strong>SEC:</strong> Security and login events.</li>
+                            </ul>
+                            
+                            <h3><strong>3. Anatomy of a Syslog Message</strong>:</h3>
+                            <p>A standard Cisco Syslog message looks like this:</p>
+                            <p><strong><code>%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to down</code></strong></p>
+                            <ul>
+                                <li><strong>%LINK:</strong> The Facility (Interface link).</li>
+                                <li><strong>3:</strong> The Severity level (Error).</li>
+                                <li><strong>UPDOWN:</strong> The Mnemonic (a shorthand code for the event).</li>
+                                <li><strong>Interface...:</strong> The actual descriptive text.</li>
+                            </ul>
+                            
+                            <h3><strong>4. Basic Cisco IOS Configuration</strong>:</h3>
+                            <p>To make Syslog useful, you need to tell the router where to send the logs and how much detail to provide. Here is the standard configuration syntax:</p>
+                            <pre># Enter global configuration mode\nRouter# <code>configure terminal</code>\n\n# Enable timestamps (crucial for troubleshooting!)\nRouter(config)# <code>service timestamps log datetime msec</code>\n\n# Send logs to an internal buffer (stored in RAM)\nRouter(config)# <code>logging buffered 16000</code>\n\n# Set the severity level for the buffer (e.g., level 6 and lower)\nRouter(config)# <code>logging buffered informational</code>\n\n# Define a remote Syslog server IP address\nRouter(config)# <code>logging host 192.168.1.50</code>\n\n# Set the severity level for messages sent to the server\nRouter(config)# <code>logging trap notifications</code>\n\n# Specify the facility for the remote server\nRouter(config)# <code>logging facility local7</code></pre>
+                            
+                            <h3><strong>Summary for your CCNA Journey:</strong>:</h3>
+                            <ul>
+                                <li>- <strong>Lower numbers = More severe</strong></li>
+                                <li>- <strong>Logging is hierarchical</strong> (setting level 4 includes 0-3).</li>
+                                <li>- <strong>Local7</strong> is the standard Cisco facility for external logging.</li>
+                                <li>- <strong>Timestamps</strong> are not enabled by default on all older IOS versions, so always remember to turn them on!</li>
+                            </ul>
                         `
                     },
                     {
