@@ -1916,10 +1916,68 @@
                     },
                     {
                         id: "3.2",
-                        title: "3.2 Router Forwarding Decision Hierarchy",
-                        summary: "1. Longest Prefix Match, 2. Lowest AD, 3. Lowest Metric",
+                        title: "3.2 Determine how a router makes a forwarding decision by default",
+                        summary: "Longest prefix match, Administrative distance, Routing protocol metric",
                         content: `
-                            <p>Golden Rule: <strong>Longest Prefix Match (LPM) ALWAYS wins</strong>, regardless of Administrative Distance!</p>
+                            <p>The routing decision process follows a very specific hierarchy. Think of it as a three-step filter.</p>
+                            <h3><strong>1. Longest Prefix Match (LPM)</strong></h3>
+                            <p>This is the <strong>golden rule</strong> of packet forwarding. When a router receives a packet, it looks at the destination IP address and searches its routing table for a match. If multiple routes match the destination, the router will always choose the <strong>most specific</strong> route—the one with the longest subnet mask (prefix).</p>
+                            
+                            <h3><strong>Example:</strong></h3>
+                            <p>Suppose a router needs to forward a packet to '192.168.10.5'. It has these three routes in its table:</p>
+                            <ul>
+                                <li>1. '192.168.10.0/24'</li>
+                                <li>2. '192.168.0.0/16'</li>
+                                <li>3. '0.0.0.0/0' (Default route)</li>
+                            </ul>
+                            <p>The router chooses '192.168.10.0/24' because '/24' is a longer (more specific) prefix than '/16' or '/0'.</p>
+                            
+                            <h3><strong>2. Administrative Distance (AD)</strong></h3>
+                            <p>If a router learns about the <strong>exact same destination prefix</strong> from two different sources (e.g., OSPF and a Static Route), it uses <strong>Administrative Distance</strong> to decide which one to trust. AD is a measure of "trustworthiness," where a <strong>lower</strong> value is preferred.</p>
+
+                            <h3><strong>Common Default AD Values:</strong></h3>
+                            <ul>
+                                <li><strong>Connected:</strong> 0</li>
+                                <li><strong>Static:</strong> 1</li>
+                                <li><strong>EIGRP (Internal):</strong> 90</li>
+                                <li><strong>OSPF:</strong> 110</li>
+                                <li><strong>RIP:</strong> 120</li>
+                            </ul>
+                            
+                            <h3><strong>Example:</strong></h3>
+                            <p>If the router learns about '10.1.1.0/24' via OSPF (AD 110) and also via a Static Route (AD 1), it will put the <strong>Static Route</strong> into the routing table and ignore the OSPF route.</p>
+
+                            <h3><strong>3. Routing Protocol Metric</strong></h3>
+                            <p>If the router learns about the <strong>exact same destination prefix</strong> from the <strong>same routing protocol</strong> via different paths, it uses the <strong>Metric</strong> to break the tie.<br>The metric represents the "cost" of the path; a <strong>lower</strong> metric is preferred.</p>
+                            <ul>
+                                <li><strong>OSPF:</strong> uses <strong>Cost</strong> (based on bandwidth).</li>
+                                <li><strong>EIGRP uses a composite of </strong>Bandwidth and Delay</strong>.</li>
+                                <li><strong>RIP:</strong> uses <strong>Hop Count</strong>.</li>
+                            </ul>
+                            
+                            <h3><strong>Example:</strong></h3>
+                            <p>In OSPF, if Path A has a cost of 20 and Path B has a cost of 45, the router will install Path A in the routing table.</p>
+
+                            <h3><strong>Summary Checklist (The Order of Operations)</strong></h3>
+                            <p>When a packet arrives, the router performs this logic:</p>
+                            <ul>
+                                <li><strong>Does the destination IP match any routes?</strong></li>
+                                <li>- If multiple matches: Choose the <strong>Longest Prefix Match</strong>.</li>
+                                <li><strong>Are there multiple sources for that *exact* same prefix?</strong></li>
+                                <li>- Compare <strong>Administrative Distance</strong> (Lowest wins).</li>
+                                <li><strong>Are there multiple paths from the *same* source for that prefix?</strong></li>
+                                <li>- Compare <strong>Metric</strong> (Lowest wins).</li>
+                                <li><strong>Are the Metrics identical?</strong></li>
+                                <li>- Perform <strong>Equal Cost Multi-Path (ECMP)</strong> load balancing.</li>
+                            </ul>
+
+                            <h3><strong>Viewing the Routing Table</strong></h3>
+                            <p>To see these decisions in action on a Cisco router, use the following command:</p>
+                            <pre>Router# <code>show ip route</code></pre>
+                            <p>If you want to see exactly which path a router will take for a specific destination IP, use:</p>
+                            <pre>Router# <code>show ip route 192.168.10.5</code></pre>
+                            <p>This command will specifically tell you which entry matches, the descriptor (LPM), and the AD/Metric values for that specific destination.</p>
+                            <p><strong>Remember</strong>: Prefix Length > AD > Metric !</p>
                         `
                     },
                     {
