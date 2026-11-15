@@ -2042,30 +2042,180 @@
                                 <li>- <strong>  S  </strong> stands for Static.</li>
                                 <li>- <strong> S\\* </strong> stands for a Static Default Route.</li>
                                 <li>- The number in brackets '[1/0]' indicates the <strong>Administrative Distance</strong> (1) and the <strong>Metric</strong> (0).</li>
+                            </ul>
                         `
                     },
                     {
                         id: "3.4",
-                        title: "3.4 Single Area OSPFv2 (Area 0)",
-                        summary: "Router ID, Wildcard Masks, DR/BDR Priority Election",
+                        title: "3.4 Configure and verify single area OSPFv2",
+                        summary: "Neighbor adjacencies, Point-to-point, Broadcast DR/BDR selection, Router ID",
                         content: `
-                            <pre><code>Router(config)# router ospf 1\nRouter(config-router)# router-id 1.1.1.1\nRouter(config)# interface gi0/0\nRouter(config-if)# ip ospf 1 area 0\nRouter(config-if)# ip ospf priority 255</code></pre>
+                            <p>OSPF (Open Shortest Path First) is a Link-State routing protocol that uses the Dijkstra algorithm to find the shortest path to a destination.<br>In a single-area setup, all routers reside in <strong>Area 0</strong> (the backbone).</p>
+                            <p>Let's dive into the configuration and verification steps!</p>
+                            
+                            <h3><strong>1. Setting the Router ID</strong></h3>
+                            <p>The Router ID (RID) is a 32-bit number that uniquely identifies the router in the OSPF domain. OSPF selects the RID in this order of priority:</p>
+                            <ul>
+                                <li>1. The manually configured ID using the 'router-id' command.</li>
+                                <li>2. The highest IP address on any active Loopback interface.</li>
+                                <li>3. The highest IP address on any active Physical interface.</li>
+                            </ul>
+                            
+                            <h3><strong>Configuration:</strong></h3>
+                            <pre>Router(config)# <code>router ospf 1</code>\nRouter(config-router)# <code>router-id 1.1.1.1</code></pre>
+                            
+                            <h3><strong>2. Configuring OSPF Adjacencies</strong></h3>
+                            <p>There are two ways to enable OSPF: using the 'network' command or directly on the interface. The interface-level configuration is often preferred for precision.</p>
+                            <h3><strong>Option A: The Network Command (Global)</strong></h3>
+                            <p>The wildcard mask is the inverse of the subnet mask.</p>
+                            <pre>Router(config)# <code>router ospf 1</code>\nRouter(config-router)# <code>network 192.168.10.0 0.0.0.255 area 0</code></pre>
+                            <h3><strong>Option B: Interface-Level (Recommended)</strong></h3>
+                            <p>The wildcard mask is the inverse of the subnet mask.</p>
+                            <pre>Router(config)# <code>interface GigabitEthernet0/0</code>\nRouter(config-if)# <code>ip ospf 1 area 0</code></pre>
+                            
+                            <h3><strong>3. OSPF Network Types</strong></h3>
+                            <p>The behavior of OSPF neighbors depends on the underlying Layer 2 technology.</p>
+                            <h3><strong>Point-to-Point (P2P)</strong></h3>
+                            <p>On serial links or direct fiber connections, there is no need for a DR/BDR election. This speeds up convergence.</p>
+                            <pre>Router(config)# <code>interface GigabitEthernet0/1</code>\nRouter(config-if)# <code>ip ospf network point-to-point</code></pre>
+                            
+                            <h3><strong>Broadcast (DR/BDR Selection)</strong></h3>
+                            <p>On Ethernet networks, OSPF defaults to <strong>Broadcast</strong>. To prevent "everyone talking to everyone," OSPF elects a <strong>Designated Router (DR)</strong> and a <strong>Backup Designated Router (BDR)</strong>.</p>
+                            <ul>
+                                <li><strong>DR:</strong> Manages LSAs for the segment.</li>
+                                <li><strong>BDR:</strong> Takes over if the DR fails.</li>
+                                <li><strong>DROthers:</strong> Routers that are neither DR nor BDR</li>
+                            </ul>
+                            
+                            <h3><strong>Influencing the Election via Priority:</strong></h3>
+                            <p>The router with the highest priority (0-255) wins. A priority of 0 means the router will <strong>never</strong> become a DR or BDR.</p>
+                            <pre>Router(config)# <code>interface GigabitEthernet0/0</code>\nRouter(config-if)# <code>ip ospf priority 255</code>\n\n* Note: If priorities are tied, the highest Router ID wins.</pre>
+                            
+                            <h3><strong>4. Verifying OSPF Operations</strong></h3>
+                            <p>Once configured, you must verify that the neighbors have reached the <strong>FULL</strong> state.</p>
+                            <h3><strong>Check Neighbor Adjacencies</strong></h3>
+                            <p>This is the most important command. You want to see the state 'FULL/DR', 'FULL/BDR', or 'FULL/DROTHER'.</p>
+                            <pre>Router# <code>show ip ospf neighbor</code></pre>
+                            <h3><strong>Check Interface Specifics</strong></h3>
+                            <p>Use this to see the Network Type (Broadcast/P2P), Priority, and Hello/Dead timers.</p>
+                            <pre>Router# <code>show ip ospf interface GigabitEthernet0/0</code></pre>
+                            <h3><strong>Check the Routing Table</strong></h3>
+                            <p>Verify that OSPF routes (marked with <strong>O</strong>) are appearing in the routing table.</p>
+                            <pre>Router# <code>show ip route ospf</code></pre>
+                            
+                            <h3><strong>Quick Troubleshooting Tip</strong></h3>
+                            <p>If your neighbors are stuck in 'INIT' or 'EXSTART' state, check for these common mismatches:</p>
+                            <ul>
+                                <li><strong>Subnet Mismatch:</strong> Neighbors must be on the same subnet.</li>
+                                <li><strong>Area Mismatch:</strong> Both must be in Area 0.</li>
+                                <li><strong>Hello/Dead Timers:</strong> Must match (Default is 10s Hello / 40s Dead on Broadcast).</li>
+                                <li><strong>MTU:</strong> Maximum Transmission Unit must match on both sides.</li>
+                            </ul>
                         `
                     },
                     {
                         id: "3.5",
-                        title: "3.5 Multi-Area OSPF Concepts",
-                        summary: "Backbone Area 0, ABR, ASBR, Summary LSAs (Type 3)",
+                        title: "3.5 Describe the purpose, functions, and concepts of first hop redundancy protocols (FHRP)",
+                        summary: "HSRP, VRRP, GLBP, Virtual MAC Addresses",
                         content: `
-                            <p><strong>ABR (Area Border Router):</strong> Connects non-backbone areas to Area 0. Generates Type 3 Summary LSAs to limit SPF calculations.</p>
+                            <p>In a standard network, a client (like your PC) is configured with a <strong>Default Gateway</strong>. This gateway is the "first hop" out of your local network.<br>But what happens if that router fails? Your connection to the internet or the rest of the enterprise dies with it. This is a <strong>Single Point of Failure</strong>.</p>
+                            <p>FHRPs are designed to solve this exact problem.</p>
+                            
+                            <h3><strong>1. The Core Concept: The Virtual Router</strong></h3>
+                            <p>The "magic" of FHRP is that it allows multiple physical routers to appear as a single <strong>Virtual Router</strong> to the hosts on a LAN.</p>
+                            <ul>
+                                <li><strong>Virtual IP (VIP):</strong> This is the IP address you configure on the clients as their Default Gateway.</li>
+                                <li><strong>Virtual MAC:</strong The routers also share a specific virtual MAC address so that when a client sends an ARP request for the VIP, the active router responds with the virtual MAC.</li>
+                            </ul>
+                            <p>If the primary router fails, a backup router transparently takes over the VIP and Virtual MAC. The end-users never even notice!</p>
+                            
+                            <h3><strong>2. Common FHRP Protocols</strong></h3>
+                            <p>There are three main protocols you need to know for the CCNA:</p>
+                            <ul>
+                                <li>1. <strong>HSRP (Hot Standby Router Protocol):</strong></li>
+                                <li>- Cisco proprietary.</li>
+                                <li>- One router is <strong>Active</strong>, one is <strong>Standby</strong>, and others are in a "Listen" state.</li>
+                                <li>2. <strong>VRRP (Virtual Router Redundancy Protocol):</strong></li>
+                                <li>- An open standard (IEEE).</li>
+                                <li>- One router is the <strong>Master</strong>, others are <strong>Backup</strong>.</li>
+                                <li>3. <strong>GLBP (Gateway Load Balancing Protocol):</strong></li>
+                                <li>- Cisco proprietary.</li>
+                                <li>- Unlike HSRP/VRRP (where only one router forwards traffic), GLBP allows traffic to be balanced across multiple routers simultaneously.</li>
+                            </ul>
+                            <h3><strong>3. Key Functions and Mechanisms</strong></h3>
+                            <ul>
+                                <li><strong>Priority:</strong> Routers use a priority value (0–255) to decide who becomes the Active/Master router. The default is usually <strong>100</strong>. The highest priority wins.</li>
+                                <li><strong>Hello Timers:</strong> Routers exchange "Hello" packets (usually via Multicast) to prove they are still alive. If the Standby router stops hearing Hellos from the Active router, it takes over.</li>
+                                <li><strong>Preemption:</strong> By default, if an Active router reboots, it won't take its job back once it recovers unless <strong>Preempt</strong> is enabled. Preemption allows a router with a higher priority to seize control immediately.</li>
+                            </ul>
+                            
+                            <h3><strong>4. Configuration Example: HSRP (Cisco)</strong></h3>
+                            <p>Let's look at a basic HSRP configuration. Imagine two routers, R1 and R2, sharing the Virtual IP '192.168.1.1'.</p>
+                            
+                            <h3><strong>Router 1 (The Primary)</strong></h3>
+                            <p>We set the priority to 110 so it wins the election over the default 100.</p>
+                            <pre>R1(config)# <code>interface GigabitEthernet0/1</code>\nR1(config-if)# <code>ip address 192.168.1.2 255.255.255.0</code>\nR1(config-if)# <code>standby 1 ip 192.168.1.1</code>\nR1(config-if)# <code>standby 1 priority 110</code>\nR1(config-if)# <code>standby 1 preempt</code>\nR1(config-if)# <code>exit</code></pre>                            
+                            <h3><strong>Router 2 (The Standby)</strong></h3>
+                            <p>We leave the priority at the default (100).</p>
+                            <pre>R2(config)# <code>interface GigabitEthernet0/1</code>\nR2(config-if)# <code>ip address 192.168.1.3 255.255.255.0</code>\nR2(config-if)# <code>standby 1 ip 192.168.1.1</code>\nR2(config-if)# <code>standby 1 preempt</code>\nR2(config-if)# <code>exit</code></pre>
+                            
+                            <h3><strong>5. Verification</strong></h3>
+                            <p>To check the status of your FHRP and see which router is currently in control, use the following command:</p>
+                            <pre>R1# <code>show standby brief</code></pre>
+                            <p>This will show you the Interface, Group, Priority, State (Active/Standby), and the Virtual IP.</p>
+                            
+                            <h3><strong>Summary</strong></h3>
+                            <p>FHRPs provide <strong>redundancy</strong> at the edge of the network. By using a Virtual IP, we ensure that even if a physical router goes up in smoke, the "First Hop" remains available, keeping our users connected and our network resilient! </p>
                         `
                     },
                     {
                         id: "3.6",
-                        title: "3.6 First Hop Redundancy Protocols (FHRP)",
-                        summary: "HSRP, VRRP, GLBP, Virtual MAC Addresses",
+                        title: "3.6 General",
+                        summary: "OSPF Multi-Area Concepts",
                         content: `
-                            <pre><code># HSRP Active Router Config\nRouter(config-if)# standby 1 ip 192.168.1.1\nRouter(config-if)# standby 1 priority 110\nRouter(config-if)# standby 1 preempt</code></pre>
+                            <p>CCNA exam also touches on the purpose of multi-area OSPF (reducing LSA flooding, summarizing routes at area boundaries) and router types (ABR, ASBR).</p>
+                            <h3><strong>OSPF Multi-Area</strong></h3>
+                            <p>As networks grow, a single OSPF area (Area 0) can become "heavy." Every router in an area maintains an identical copy of the Link-State Database (LSDB). If the network is too large, the SPF (Shortest Path First) calculation can strain the CPU, and any minor link flap causes every router in the area to recalculate its map. Multi-area OSPF solves this by introducing <strong>hierarchy</strong>.<br>Let’s break it down!</p>
+                            
+                            <h3><strong>1. The Hierarchical Structure</strong></h3>
+                            <p>OSPF uses a two-tier hierarchy:</p>
+                            <ul>
+                                <li><strong>Backbone Area (Area 0):</strong> The core of the OSPF network. All other areas must physically or logically connect to Area 0 to exchange routing information.</li>
+                                <li><strong>Non-Backbone Areas:</strong> Used to group local users and resources. These areas do not exchange traffic directly with each other; they must go through the backbone.</li>
+                            </ul>
+                            
+                            <h3><strong>2. Router Roles in Multi-Area</strong></h3>
+                            <p>In a multi-area setup, routers take on specific roles based on where their interfaces sit:</p>
+                            <ul>
+                                <li><strong>Internal Router:</strong> All interfaces are inside the same OSPF area.</li>
+                                <li><strong>Backbone Router:</strong> A router with at least one interface in Area 0.</li>
+                                <li><strong>ABR (Area Border Router):</strong> A router that has interfaces in multiple areas (e.g., one in Area 0 and one in Area 10). The ABR is responsible for passing routing information between areas.</li>
+                                <li><strong>ASBR (Autonomous System Boundary Router):</strong> A router that connects the OSPF network to another routing domain (like EIGRP, BGP, or Static routes).</li>
+                            </ul>
+                            
+                            <h3><strong>3. LSA Types (The Communication)</strong></h3>
+                            <p>In a single area, we mostly deal with Type 1 and Type 2 LSAs. In Multi-area, the ABR introduces <strong>Type 3 LSAs (Summary LSAs)</strong>.</p>
+                            <ul>
+                                <li><strong>Type 1 (Router LSA):</strong> Stays within its own area. It describes the router and its links.</li>
+                                <li><strong>Type 2 (Network LSA):</strong> Stays within its own area. Created by the DR on multi-access segments.</li>
+                                <li><strong>Type 3 (Summary LSA):</strong> Created by the ABR. It tells Area 0 about the networks in Area 10, and vice versa. It doesn't share the full topology details, just the reachability (prefix and mask).</li>
+                            </ul>
+                            
+                            <h3><strong>4. Configuring a Multi-Area OSPF</strong></h3>
+                            <p>Imagine we have a router acting as an **ABR**. It has one interface in the backbone (Area 0) and one in a branch (Area 10).</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>router ospf 1</code>\nRouter(config-router)# <code>router-id 1.1.1.1</code>\n\n! Interface in Area 0 (Backbone)\nRouter(config-router)# <code>network 10.1.1.0 0.0.0.3 area 0</code>\n\n! Interface in Area 10 (Branch)\nRouter(config-router)# <code>network 192.168.10.0 0.0.0.255 area 10</code>\n\n* Note:\nThe ABR is the only place where the 'area' command will reference two different numbers.</pre>
+                            
+                            <h3><strong>5. Benefits of Multi-Area OSPF</strong></h3>
+                            <ul>
+                                <li><strong>Reduced SPF Calculations:</strong> A topology change in Area 10 stays in Area 10. Area 0 routers don't have to re-run the full SPF algorithm; they just see a minor update in a Type 3 LSA.</li>
+                                <li><strong>Smaller Routing Tables:</strong> You can perform <strong>Route Summarization</strong> at the ABR to keep routing tables lean.</li>
+                                <li><strong>Reduced LSA Flooding::</strong> Since Type 1 and 2 LSAs don't cross the ABR, the flooding traffic is significantly reduced.</li>
+                            </ul>
+                            
+                            <h3><strong>6. Verification Commands</strong></h3>
+                            <p>To see if your Multi-Area configuration is working correctly, use these essential commands:</p>
+                            <pre>! Check which areas the router is connected to\nRouter# <code>show ip ospf</code>\n\n! View the LSDB and look for Summary Net Link States (Type 3)\nRouter# <code>show ip ospf database</code>\n\n! Verify that inter-area routes appear as 'IA' in the routing table\nRouter# <code>show ip route ospf</code></pre>
+                            <p><strong>Pro-Tip:</strong> When you look at <code>show ip route</code>, routes from other areas will be marked with <strong>OI</strong> (OSPF Inter-Area). This tells you the ABR is successfully doing its job!</p>                            
                         `
                     }
                 ]
