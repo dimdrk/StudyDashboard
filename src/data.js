@@ -2226,18 +2226,99 @@
                 topics: [
                     {
                         id: "4.1",
-                        title: "4.1 Inside Source NAT & PAT",
+                        title: "4.1 Configure and verify inside source NAT using static and pools",
                         summary: "Static NAT, Dynamic Pools, Port Address Translation (Overload)",
                         content: `
-                            <pre><code>Router(config)# ip nat pool PUBLIC_POOL 203.0.113.10 203.0.113.15 netmask 255.255.255.248\nRouter(config)# ip nat inside source list 1 pool PUBLIC_POOL overload</code></pre>
+                            <p>Network Address Translation (NAT) allows us to conserve public IPv4 addresses by translating private (RFC 1918) addresses into routable public addresses.<br>We will focus on <strong>Inside Source NAT</strong>, which translates the source IP address of packets leaving your internal network.</p>
+                            
+                            <h3><strong>1. Static NAT (One-to-One)</strong></h3>
+                            <p>Static NAT creates a fixed, permanent mapping between an internal private IP and an external public IP.<br>This is typically used for internal servers (like a Web or Mail server) that need to be reachable from the outside world.</p>
+                            
+                            <h3><strong>The Configuration</strong></h3>
+                            <p>Assume your internal server is '192.168.10.10' and your public IP is '203.0.113.5'.</p>
+                            <pre># Step 1: Identify the inside and outside interfaces\nRouter(config)# <code>interface gigabitEthernet 0/0</code>\nRouter(config-if)# <code>ip nat inside</code>\nRouter(config-if)# <code>exit</code>\n\nRouter(config)# <code>interface gigabitEthernet 0/1</code>\nRouter(config-if)# <code>ip nat outside</code>\nRouter(config-if)# <code>exit</code>\n\n# Step 2: Configure the static mapping\nRouter(config)# <code>ip nat inside source static 192.168.10.10 203.0.113.5</code></pre>
+                            
+                            <h3><strong>2. Dynamic NAT with Pools (Many-to-Many)</strong></h3>
+                            <p>Dynamic NAT allows a group of internal hosts to share a "pool" of public IP addresses.<br>When a host needs to access the internet, the router assigns an available IP from the pool. Once the session ends, the IP is returned to the pool.</p>
+                            
+                            <h3><strong>The Configuration</strong></h3>
+                            <p>Let's translate the subnet '192.168.10.0/24' using a public pool ranging from '203.0.113.10' to '203.0.113.15'.</p>
+                            <pre># Step 1:  Define the interfaces (if not already done)\nRouter(config)# <code>interface gigabitEthernet 0/0</code>\nRouter(config-if)# <code>ip nat inside</code>\nRouter(config-if)# <code>interface gigabitEthernet 0/1</code>\nRouter(config-if)# <code>ip nat outside</code>\nRouter(config-if)# <code>exit</code>\n\n# Step 2: Define an ACL to identify "interesting traffic" (the internal hosts)\nRouter(config)# <code>access-list 1 permit 192.168.10.0 0.0.0.255</code>\n\n# Step 3: Define the pool of public IP addresses\nRouter(config)# <code>ip nat pool MY_PUBLIC_POOL 203.0.113.10 203.0.113.15 netmask 255.255.255.248</code>\n\n# Step 4: Map the ACL to the Pool\nRouter(config)# <code>ip nat inside source list 1 pool MY_PUBLIC_POOL</code></pre>
+                            <p>* Note: If you want many internal hosts to share a <strong>single</strong> public IP, you would add the keyword 'overload' at the end of the command in Step 4.<br>This is known as PAT (Port Address Translation).</p>
+                            
+                            <h3><strong>3. Verification Commands</strong></h3>
+                            <p>Verification is the most important part of the CCNA exam! Use these commands to ensure your NAT is working correctly.</p>                            
+                            <h3><strong>To see the active translation table:</strong></h3>
+                            <p>This shows you which internal IP is currently mapped to which external IP.</p>
+                            <pre>Router# <code>show ip nat translations</code></pre> 
+                            <h3><strong>To see NAT statistics:</strong></h3>
+                            <p>This shows you the number of active translations, the pool hits, and which interfaces are designated as inside/outside.</p>
+                            <pre>Router# <code>show ip nat statistics</code></pre>
+                            <h3><strong>To clear the dynamic translations:</strong></h3>
+                            <p>Useful if you want to reset your pool for testing.</p>
+                            <pre>Router# <code>clear ip nat translation *</code></pre>
+                            <h3><strong>To monitor NAT in real-time (Caution: CPU intensive):</strong></h3>
+                            <p>Use this only in a lab environment to see translations happening live.</p>
+                            <pre>Router# <code>debug ip nat</code></pre>
+                            
+                            <h3><strong>Quick Summary for your Lab:</strong></h3>
+                            <ul>
+                                <li><strong><code>ip nat inside</code>:</strong> Put this on the interface facing your LAN.</li>
+                                <li><strong><code>ip nat outside</code>:</strong> Put this on the interface facing your ISP.</li>
+                                <li><strong>Static:</strong> Direct mapping for servers.</li>
+                                <li><strong>Pools:</strong> Use an ACL + a Pool definition for groups of users.</li>
+                            </ul>
                         `
                     },
                     {
                         id: "4.2",
-                        title: "4.2 Network Time Protocol (NTP)",
+                        title: "4.2 Configure and verify NTP operating in a client and server mode.",
                         summary: "Stratum Hierarchy, Client/Server Mode, NTP Verification",
                         content: `
-                            <pre><code>Router(config)# ntp master 3\nClient(config)# ntp server 10.0.0.1\nClient# show ntp status</code></pre>
+                            <p>Synchronizing time across your network is critical for troubleshooting via logs, security protocols like Kerberos, and digital certificates.<br>Let’s dive into how to set up <strong>NTP (Network Time Protocol)</strong> in a Client/Server relationship.</p>
+                            
+                            <h3><strong>The Scenario</strong></h3>
+                            <ul>
+                                <li><strong>Router 1 (R1):</strong> The NTP Server (IP: 10.0.0.1)</li>
+                                <li><strong>Router 2 (R2):</strong> The NTP Client (IP: 10.0.0.2)</li>
+                            </ul>
+                            
+                            <h3><strong>Step 1: Configure the NTP Server (R1)</strong></h3>
+                            <p>On the server, we need to tell the router it is the authoritative source for time. We do this by setting a <strong>Stratum</strong> number.<br>The lower the stratum, the more accurate the clock is considered (Stratum 1 is a primary reference clock).</p>
+                            <pre>R1# <code>configure terminal</code>\nR1(config)# <code>ntp master 3</code></pre>
+                            <p>* Note: In a production environment, you would usually point your server to a Stratum 1 or 2 source on the internet, but 'ntp master' makes this router the source for your lab.</p>
+                            
+                            <h3><strong>Step 2: Configure the NTP Client (R2)</strong></h3>
+                            <p>On the client, we tell the router where to look for the time.</p>
+                            <pre>R2# <code>configure terminal</code>\nR2(config)# <code>ntp server 10.0.0.1</code></pre>
+                            
+                            <h3><strong>Step 3: Set the Timezone and DST</strong></h3>
+                            <p>Even if the routers are synced via NTP, the logs might look wrong if you haven't set the local timezone. NTP always communicates in UTC.</p>
+                            <pre>R1(config)# <code>clock timezone EST -5</code>\nR1(config)# <code>clock summer-time EDT recurring</code>\n\n* Repeat these commands on the client as well.</pre>
+                            
+                            <h3><strong>Step 4: Verification</strong></h3>
+                            <p>NTP synchronization is not instantaneous; it can take a few minutes for the "poll" to complete and the clocks to align.<br>Here are the two most important commands to verify your work:</p>
+                            <h3><strong>- Check Synchronization Status</strong></h3>
+                            <p>This command tells you if the clock is actually synchronized and what the current stratum is.</p>
+                            <pre>R2# <code>show ntp status</code></pre>
+                            <p><strong>What to look for:</strong> Look for the line that says <strong>"Clock is synchronized, stratum 4"</strong>. If it says "unsynchronized," wait 2-3 minutes and try again.</p>
+
+                            <h3><strong>- Check Associations</strong></h3>
+                            <p>This shows the relationship between the client and the server.</p>
+                            <pre>R2# <code>show ntp associations</code></pre>
+                            <ul>
+                                <li><strong>What to look for:</strong> You want to see an <strong>asterisk (*)</strong> next to the server's IP address.</li>
+                                <li>'*' = Master/Synced</li>
+                                <li>'+' = Candidate (Good backup)</li>
+                                <li>'~' = Configured statically</li>
+                            </ul>
+                            
+                            <h3><strong>Pro-Tip: NTP Authentication (CCNA Level)</strong></h3>
+                            <p>In a real-world environment, you don't want just any device pretending to be a time server.<br>You can add a MD5 password (key) to ensure the client only trusts your specific server.</p>
+                            <h3><strong>On both Server and Client:</strong></h3>
+                            <pre>R1(config)# <code>ntp authenticate</code>\nR1(config)# <code>ntp authentication-key 1 md5 CISCO123</code>\nR1(config)# <code>ntp trusted-key 1</code></pre>
+                            <h3><strong>On the Client only</strong></h3>
+                            <pre>R2(config)# <code>ntp server 10.0.0.1 key 1</code></pre>
                         `
                     },
                     {
@@ -2287,6 +2368,22 @@
                     {
                         id: "4.8",
                         title: "4.8 Wireless Roaming & Architecture Details",
+                        summary: "Layer 2 vs Layer 3 Roaming, Mobility Groups, Anchor WLCs",
+                        content: `
+                            <p><strong>L3 Roaming:</strong> Uses CAPWAP Mobility Tunnels between Anchor WLC and Foreign WLC so clients keep their original IP address while roaming across subnets.</p>
+                        `
+                    },
+                    {
+                        id: "4.9",
+                        title: "4.9 Describe the capabilities and functions of TFTP/FTP in the network.",
+                        summary: "Layer 2 vs Layer 3 Roaming, Mobility Groups, Anchor WLCs",
+                        content: `
+                            <p><strong>L3 Roaming:</strong> Uses CAPWAP Mobility Tunnels between Anchor WLC and Foreign WLC so clients keep their original IP address while roaming across subnets.</p>
+                        `
+                    },
+                    {
+                        id: "4.10",
+                        title: "4.10 Wireless Roaming & Architecture Details",
                         summary: "Layer 2 vs Layer 3 Roaming, Mobility Groups, Anchor WLCs",
                         content: `
                             <p><strong>L3 Roaming:</strong> Uses CAPWAP Mobility Tunnels between Anchor WLC and Foreign WLC so clients keep their original IP address while roaming across subnets.</p>
