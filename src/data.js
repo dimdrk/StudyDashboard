@@ -1982,10 +1982,66 @@
                     },
                     {
                         id: "3.3",
-                        title: "3.3 Static Routing (IPv4 & IPv6)",
-                        summary: "Default Routes (0.0.0.0/0, ::/0), Host Routes, Floating Statics",
+                        title: "3.3 Configure and verify IPv4 and IPv6 static routing",
+                        summary: "Default route, Network route, Host route, Floating static",
                         content: `
-                            <pre><code># Floating Static Route (Backup via AD 10)\nRouter(config)# ip route 192.168.2.0 255.255.255.0 172.16.0.2 10\nRouter(config)# ipv6 route ::/0 2001:db8:acad:1::2</code></pre>
+                            <h3><strong>1. IPv4 Static Routing</strong></h3>
+                            <p>The general syntax for an IPv4 static route is:</p>
+                            <pre>Router(config)# <code>ip route</code> [dest-net] [sub-mask] [next-hop-IP/exit-inter] [distance]</pre>
+                            
+                            <h3><strong>A. Network Route</strong></h3>
+                            <p>This is the most common type, used to reach a specific subnet.</p>
+                            <pre># Directing traffic for the 192.168.2.0/24 network to next-hop 10.0.0.2\nRouter(config)# <code>ip route 192.168.2.0 255.255.255.0 10.0.0.2</code></pre>
+                            
+                            <h3><strong>B. Default Route</strong></h3>
+                            <p>Used when no other specific route matches a destination. It is often called the "Gateway of Last Resort."</p>
+                            <pre># Matches all traffic and sends it toward the ISP or Core\nRouter(config)# <code>ip route 0.0.0.0 0.0.0.0 10.0.0.2</code></pre>
+                            
+                            <h3><strong>C. Host Route</strong></h3>
+                            <p>Targets a single specific IP address (usually a server or a loopback). It uses a "quad-255" mask.</p>
+                            <pre># Directing traffic specifically for one server\nRouter(config)# <code>ip route 192.168.2.50 255.255.255.255 10.0.0.2</code></pre>
+                            
+                            <h3><strong>D. Floating Static Route</strong></h3>
+                            <p>This is a backup route. Static routes have a default <strong>Administrative Distance (AD) of 1</strong>.<br>By setting a higher AD, the route will only appear in the routing table if the primary route fails.</p>
+                            <pre># Primary route (AD of 1)\nRouter(config)# <code>ip route 192.168.2.0 255.255.255.0 10.0.0.2</code>\n\n# Backup route via a different path (AD of 10)</code>\nRouter(config)# <code>ip route 192.168.2.0 255.255.255.0 172.16.0.2 10</code></pre>
+                            
+                            <h3><strong>2. IPv6 Static Routing</strong></h3>
+                            <p><strong>Important Note:</strong> Before configuring IPv6 routing, you must enable it on the router.</p>
+                            <pre>Router(config)# <code>ipv6 unicast-routing</code></pre>
+                            
+                            <h3><strong>A. Network Route</strong></h3>
+                            <pre># Directing traffic for a specific IPv6 prefix\nRouter(config)# <code>ipv6 route 2001:db8:acad:2::/64 2001:db8:acad:1::2</code></pre>
+                            
+                            <h3><strong>B. Default Route</strong></h3>
+                            <p>The IPv6 equivalent of 0.0.0.0/0 is '::/0'.</p>
+                            <pre># Sending all unknown IPv6 traffic to the next-hop\nRouter(config)# <code>ipv6 route ::/0 2001:db8:acad:1::2</code></pre>
+                            
+                            <h3><strong>C. Host Route</strong></h3>
+                            <p>Targets one specific IPv6 address using a '/128' prefix.</p>
+                            <pre># Directing traffic to a specific IPv6 host\nRouter(config)# <code>ipv6 route 2001:db8:acad:2::50/128 2001:db8:acad:1::2</code></pre>
+                            
+                            <h3><strong>D. Floating Static Route</strong></h3>
+                            <p>Just like IPv4, we add an AD at the end of the command.</p>
+                            <pre># Primary IPv6 route\nRouter(config)# <code>ipv6 route 2001:db8:acad:2::/64 2001:db8:acad:1::2</code>\n\n# Backup IPv6 route with AD of 10</code>\nRouter(config)# <code>ipv6 route 2001:db8:acad:2::/64 2001:db8:acad:3::2 10</code></pre>
+                            
+                            <h3><strong>3. Verification Commands</strong></h3>
+                            <p>Once you've finished your configuration, you need to verify that the routes are in the routing table and that connectivity exists.</p>
+                            
+                            <h3><strong>View the Routing Table</strong></h3>
+                            <pre># Check IPv4 routes (Look for 'S' for Static and 'S*' for Default)\nRouter# <code>show ip route</code>\n\n# Check IPv6 routes\nRouter# <code>show ipv6 route</code></pre>
+                            
+                            <h3><strong>Verify Specific Route Details</strong></h3>
+                            <pre># See details for a specific destination\nRouter# <code>show ip route 192.168.2.0</code></pre>
+                            
+                            <h3><strong>Test Connectivity</strong></h3>
+                            <pre># Ping the remote destination\nRouter# <code>ping 192.168.2.1</code>\nRouter# <code>ping ipv6 2001:db8:acad:2::1</code>\n\n# Trace the path to see which route is being used\nRouter# <code>traceroute 192.168.2.1</code></pre>
+                            
+                            <h3><strong>Quick CCNA Tip:</strong></h3>
+                            <ul>
+                                <li>In the 'show ip route' output:</li>
+                                <li>- <strong>  S  </strong> stands for Static.</li>
+                                <li>- <strong> S\\* </strong> stands for a Static Default Route.</li>
+                                <li>- The number in brackets '[1/0]' indicates the <strong>Administrative Distance</strong> (1) and the <strong>Metric</strong> (0).</li>
                         `
                     },
                     {
