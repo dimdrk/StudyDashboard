@@ -2512,13 +2512,13 @@
                                 </tbody>
                             </table>
                             
-                            <h3><strong>*Pro Tip for the Exam:</strong> Use this mnemonic to remember the order:</h3>
+                            <h3><strong>*Pro Tip for the Exam:</strong> Use this mnemonic to remember the order</h3>
                             <p>"<strong>E</strong>very <strong>A</strong>wesome <strong>C</strong>isco <strong>E</strong>ngineer <strong>W</strong>ill <strong>N</strong>eed <strong>I</strong>ce <strong>C</strong>ream"<br>(Emergency, Alert, Critical, Error, Warning, Notice, Informational, Debugging).</p>
                             
-                            <h3><strong>2. Syslog Facilities</strong>:</h3>
+                            <h3><strong>2. Syslog Facilities</strong></h3>
                             <p>While the severity tells you "how bad" the situation is, the <strong>Facility</strong> tells you "who" or "what" generated the message.<br>On a Cisco device, facilities identify the source of the message (e.g., the IP stack, OSPF, or a physical interface).<br>When sending logs to a remote Linux-based Syslog server, Cisco devices typically use the **local7** facility by default.</p>
                             
-                            <h3><strong>Common Cisco facilities include:</strong>:</h3>
+                            <h3><strong>Common Cisco facilities include:</strong></h3>
                             <ul>
                                 <li><strong>LINK:</strong> Interface status changes.</li>
                                 <li><strong>OSPF:</strong> Routing protocol events.</li>
@@ -2526,7 +2526,7 @@
                                 <li><strong>SEC:</strong> Security and login events.</li>
                             </ul>
                             
-                            <h3><strong>3. Anatomy of a Syslog Message</strong>:</h3>
+                            <h3><strong>3. Anatomy of a Syslog Message</strong></h3>
                             <p>A standard Cisco Syslog message looks like this:</p>
                             <p><strong><code>%LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to down</code></strong></p>
                             <ul>
@@ -2536,11 +2536,11 @@
                                 <li><strong>Interface...:</strong> The actual descriptive text.</li>
                             </ul>
                             
-                            <h3><strong>4. Basic Cisco IOS Configuration</strong>:</h3>
+                            <h3><strong>4. Basic Cisco IOS Configuration</strong></h3>
                             <p>To make Syslog useful, you need to tell the router where to send the logs and how much detail to provide. Here is the standard configuration syntax:</p>
                             <pre># Enter global configuration mode\nRouter# <code>configure terminal</code>\n\n# Enable timestamps (crucial for troubleshooting!)\nRouter(config)# <code>service timestamps log datetime msec</code>\n\n# Send logs to an internal buffer (stored in RAM)\nRouter(config)# <code>logging buffered 16000</code>\n\n# Set the severity level for the buffer (e.g., level 6 and lower)\nRouter(config)# <code>logging buffered informational</code>\n\n# Define a remote Syslog server IP address\nRouter(config)# <code>logging host 192.168.1.50</code>\n\n# Set the severity level for messages sent to the server\nRouter(config)# <code>logging trap notifications</code>\n\n# Specify the facility for the remote server\nRouter(config)# <code>logging facility local7</code></pre>
                             
-                            <h3><strong>Summary for your CCNA Journey:</strong>:</h3>
+                            <h3><strong>Summary for your CCNA Journey:</strong></h3>
                             <ul>
                                 <li>- <strong>Lower numbers = More severe</strong></li>
                                 <li>- <strong>Logging is hierarchical</strong> (setting level 4 includes 0-3).</li>
@@ -2556,30 +2556,30 @@
                         content: `
                             <p>In a typical network, you won't always have a DHCP server on every single subnet.<br>This is where the <strong>DHCP Client</strong> and <strong>DHCP Relay</strong> (Helper Address) concepts become vital.</p>
                             
-                            <h3><strong>1. Configuring a Router as a DHCP Client</strong>:</h3>
+                            <h3><strong>1. Configuring a Router as a DHCP Client</strong></h3>
                             <p>Sometimes, a router needs to receive its IP address from an ISP or a central management router. Instead of assigning a static IP, we tell the interface to listen for DHCP offers.</p>                            
-                            <h3><strong>Configuration Syntax:</strong>:</h3>
+                            <h3><strong>Configuration Syntax:</strong></h3>
                             <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/0</code>\n\Router(config-if)# <code>ip address dhcp</code>\nRouter(config-if)# <code>no shutdown</code>\nRouter(config-if)# <code>exit</code></pre>
                             
-                            <h3><strong>What happens here?</strong>:</h3>
+                            <h3><strong>What happens here?</strong></h3>
                             <p>The router sends out a DHCP Discovery packet. Once it receives an offer, it will automatically configure its IP, subnet mask, default gateway, and DNS settings.</p>
                             
-                            <h3><strong>2. Configuring DHCP Relay (The IP Helper Address)</strong>:</h3>
+                            <h3><strong>2. Configuring DHCP Relay (The IP Helper Address)</strong></h3>
                             <p>By default, routers <strong>do not</strong> forward broadcasts. Since a DHCP Discovery is a broadcast, it won't reach a server located on a different subnet.<br>The <strong>DHCP Relay Agent</strong> solves this by converting that broadcast into a unicast packet directed at the server.</p>
                             <h3><strong>Scenario:</strong>:</h3>
                             <p><strong>Client</strong> is on 'GigabitEthernet0/0' (Subnet 192.168.10.0/24).<br><strong>DHCP Server</strong> is at '10.1.1.50' (on a different network).</p>                          
-                            <h3><strong>Configuration Syntax:</strong>:</h3>
+                            <h3><strong>Configuration Syntax:</strong></h3>
                             <p>You must apply the configuration on the interface <strong>closest to the client</strong> (the gateway).</p>
                             <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/0</code>\nRouter(config-if)# <code>ip helper-address 10.1.1.50</code>\nRouter(config-if)# <code>exit</code></pre>
                             <p><strong>Pro Tip:</strong> You can configure multiple 'ip helper-address' commands if you have redundant DHCP servers!</p>
                          
-                            <h3><strong>3. Verification Commands</strong>:</h3>
+                            <h3><strong>3. Verification Commands</strong></h3>
                             <p>Once configured, you need to ensure the lease was successful. Use these commands to verify the state of your interfaces and the relay process.</p>
                             <p>To verify the DHCP Client:</p>
                             <pre># Check if the interface received an IP via DHCP\nRouter# <code>show ip interface brief</code>\n\n# See detailed DHCP lease information (lease time, renewal time, etc.)\nRouter# <code>show dhcp lease</code></pre>
                             <p>To verify the DHCP Relay:</p>
                             <pre># Check if the helper address is active on the interface\nRouter# <code>show ip interface GigabitEthernet0/0</code>\n\n* Look for the line that says: "Helper address is 10.1.1.50"</pre>
-                            <h3><strong>For Real-time Troubleshooting:</strong>:</h3>
+                            <h3><strong>For Real-time Troubleshooting:</strong></h3>
                             <p>If clients aren't getting addresses, use these debug commands (use with caution in production!):</p>
                             <pre>Router# <code>debug ip dhcp server events</code>\nRouter# <code>debug ip packet</code></pre>
 
@@ -2616,46 +2616,46 @@
                         content: `
                             <p>In the world of networking, <strong>Per-Hop Behavior (PHB)</strong> describes how an individual router or switch treats a packet as it traverses that specific "hop."<br>Think of QoS as a VIP service at an airport: some passengers (packets) get to skip the line, while others have to wait.</>
                             
-                            <h3><strong>1. Classification</strong>:</h3>
+                            <h3><strong>1. Classification</strong></h3>
                             <p>Before we can treat a packet differently, we must identify it. Classification is the process of inspecting a packet and assigning it to a "class" based on specific criteria.</p>
                             <p><strong>Methods:</strong> Access Control Lists (ACLs), incoming interface, or **NBAR** (Network Based Application Recognition) which looks deep into Layer 7 protocols.</p>
                             
-                            <h3><strong>2. Marking</strong>:</h3>
+                            <h3><strong>2. Marking</strong></h3>
                             <p>Once classified, we "color" the packet so subsequent routers don't have to re-classify it.</p>
                             <ul>
                                 <li><strong>Layer 2 (Ethernet):</strong> Uses the <strong>Class of Service (CoS)</strong> bits inside the 802.1Q header (3 bits).</li>
                                 <li><strong>Layer 3 (IP):</strong> Uses the <strong>Differentiated Services Code Point (DSCP)</strong> inside the Type of Service (ToS) byte (6 bits).</li>
                             </ul>
                             
-                            <h3><strong>Common DSCP Values to Remember:</strong>:</h3>
+                            <h3><strong>Common DSCP Values to Remember:</strong></h3>
                             <ul>
                                 <li><strong>EF (Expedited Forwarding):</strong> Reserved for Voice (low latency).</li>
                                 <li><strong>AF (Assured Forwarding):</strong> High-priority data.</li>
                                 <li><strong>BE (Best Effort):</strong> Standard internet traffic.</li>
                             </ul>
                             
-                            <h3><strong>3. Policing and Shaping (Traffic Conditioning)</strong>:</h3>
+                            <h3><strong>3. Policing and Shaping (Traffic Conditioning)</strong></h3>
                             <p>These mechanisms control the "rate" of traffic to prevent congestion.</p>
                             <ul>
                                 <li><strong>Policing:</strong> If the traffic exceeds a set rate, the excess is dropped immediately or re-marked. It causes "micro-bursts" and is usually applied to <strong>ingress</strong> (inbound) traffic.</li>
                                 <li><strong>Shaping:</strong> If traffic exceeds the rate, it is buffered (held in memory) and sent later. This "smooths" the traffic flow and is applied to <strong>egress</strong> (outbound) traffic.</li>
                             </ul>
                             
-                            <h3><strong>4. Queuing (Congestion Management)</strong>:</h3>
+                            <h3><strong>4. Queuing (Congestion Management)</strong></h3>
                             <p>When an interface is congested, packets are stored in buffers (queues). PHB dictates which queue gets emptied first.</p>
                             <ul>
                                 <li><strong>CBWFQ (Class-Based Weighted Fair Queuing):</strong> Guarantees bandwidth to different classes.</li>
                                 <li><strong>LLQ (Low Latency Queuing):</strong> This is CBWFQ plus a <strong>Strict Priority Queue</strong>. This is vital for Voice over IP (VoIP), as voice packets are sent before anything else.</li>
                             </ul>
                             
-                            <h3><strong>5. Congestion Avoidance</strong>:</h3>
+                            <h3><strong>5. Congestion Avoidance</strong></h3>
                             <p>What happens when the buffers get full? If we wait until they are 100% full, the router performs a "Tail Drop," which can cause TCP synchronization issues.</p>
                             <ul>
                                 <li><strong>WRED (Weighted Random Early Detection):</strong> The router begins dropping lower-priority packets *randomly* before the queue is full. This signals the sending devices to slow down their transmission rate.</li>
                             </ul>hing else.</li>
                             </ul>
                             
-                            <h3><strong>Configuration Example (Cisco MQC)</strong>:</h3>
+                            <h3><strong>Configuration Example (Cisco MQC)</strong></h3>
                             <p>In Cisco IOS, we use the <strong>Modular QoS CLI (MQC)</strong> to implement these behaviors. Here is a standard configuration for prioritizing Voice traffic:</p>
                             <pre># Step 1: Classify the traffic\nRouter(config)# <code>class-map match-any VOICE-CLASS</code>\nRouter(config-cmap)# <code>match dscp ef</code>\nRouter(config-cmap)# <code>match protocol rtp</code>\nRouter(config-cmap)# <code>exit</code>\n\n# Step 2: Define the Policy (PHB)\nRouter(config)# <code>policy-map QOS-POLICY</code>\nRouter(config-pmap)# <code>class VOICE-CLASS</code>\nRouter(config-pmap-c)# <code>priority 128</code>  # LLQ: Strict priority with 128kbps guaranteed\nRouter(config-pmap-c)# <code>class class-default</code>\nRouter(config-pmap-c)# <code>fair-queue</code>     # All other traffic gets fair treatment\nRouter(config-pmap-c)# <code>exit</code>\nRouter(config)# <code>exit</code>\n\n# Step 3: Apply to the interface\nRouter(config)# <code>interface GigabitEthernet0/1</code>\nRouter(config-if)# <code>service-policy output QOS-POLICY</code></pre>
 
@@ -2711,7 +2711,7 @@
                         summary: "SSH on a Cisco router or switch",
                         content: `
                             <p>To get SSH up and running on a Cisco router or switch, we follow a specific sequence of steps.</p>
-                            <h3><strong>Prerequisites</strong>:</h3>
+                            <h3><strong>Prerequisites</strong></h3>
                             <p>Before we can generate encryption keys, the device needs a unique identity.</p>
                             <ul>
                                 <li><strong>Set a Hostname:</strong>The default "Router" or "Switch" won't work for key generation.</li>
@@ -2719,44 +2719,218 @@
                             </ul>
                             <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>hostname R1</code>\nR1(config)# <code>ip domain-name cisco.com</code></pre>
 
-                            <h3><strong>Step 1: Generate the RSA Key Pair</strong>:</h3>
+                            <h3><strong>Step 1: Generate the RSA Key Pair</strong></h3>
                             <p>This is the "secret sauce" that allows for encryption. I recommend using at least **1024 bits** for security; 2048 is even better.</p>
                             <pre>R1(config)# <code>crypto key generate rsa</code>\n# The system will ask: How many bits in the modulus [512]:\n# Type <code>1024</code> and press Enter.</pre>
                             
-                            <h3><strong>Step 2: Configure Local Authentication</strong>:</h3>
+                            <h3><strong>Step 2: Configure Local Authentication</strong></h3>
                             <p>We need a local user database so the device knows who is allowed to log in. Always use 'secret' instead of 'password' for better hashing.</p>
                             <pre>R1(config)# <code>username admin privilege 15 secret C1sc0123!</code>\n\n* Note: Privilege 15 drops the user directly into privileged EXEC mode.</pre>
                             
-                            <h3><strong>Step 3: Configure the Virtual Terminal (VTY) Lines</strong>:</h3>
+                            <h3><strong>Step 3: Configure the Virtual Terminal (VTY) Lines</strong></h3>
                             <p>Now we tell the router to use the local database and only allow SSH (disabling Telnet).</p>
                             <pre>R1(config)# <code>line vty 0 4</code>\nR1(config-line)# <code>login local</code>\nR1(config-line)# <code>transport input ssh</code>\nR1(config-line)# <code>exit</code></pre>
                             
-                            <h3><strong>Step 4: Force SSH Version 2 (Recommended)</strong>:</h3>
+                            <h3><strong>Step 4: Force SSH Version 2 (Recommended)</strong></h3>
                             <p>By default, the device might support Version 1, which has known vulnerabilities. Let's force Version 2 for maximum security.</p>
                             <pre>R1(config)# <code>ip ssh version 2</code></pre>
                             
-                            <h3><strong>Step 5: Verification</strong>:</h3>
+                            <h3><strong>Step 5: Verification</strong></h3>
                             <p>You want to make sure everything is running correctly. Use these commands to check your work:</p>
                             <pre># Check if SSH is enabled and which version is running\nR1# <code>show ip ssh</code>\n\n# Check the status of current SSH connections\nR1# <code>show ssh</code></pre>
                             
-                            <h3><strong>Pro-Tip for the CCNA Exam</strong>:</h3>
+                            <h3><strong>Pro-Tip for the CCNA Exam</strong></h3>
                             <p>If you try to generate the RSA keys and get an error, double-check that you have configured both a <strong>hostname</strong> and an <strong>ip domain-name</strong>. The device uses the combination (e.g., 'R1.cisco.com') as the label for the key!</p>
                         `
                     },
                     {
                         id: "4.9",
                         title: "4.9 Describe the capabilities and functions of TFTP/FTP in the network.",
-                        summary: "Layer 2 vs Layer 3 Roaming, Mobility Groups, Anchor WLCs",
+                        summary: "File transfer versions",
                         content: `
-                            <p><strong>L3 Roaming:</strong> Uses CAPWAP Mobility Tunnels between Anchor WLC and Foreign WLC so clients keep their original IP address while roaming across subnets.</p>
+                            <h3><strong>1. TFTP (Trivial File Transfer Protocol)</strong></h3>
+                            <p>TFTP is the "lightweight" version of file transfer. It is designed to be simple and small enough to fit into the limited boot ROM of a network device.</p>
+                            <ul>
+                                <li><strong>Protocol/Port:</strong> Uses <strong>UDP port 69</strong>.</li>
+                                <li><strong>Connection Type:</strong> Connectionless. It doesn't guarantee delivery at the protocol level (though it has its own basic acknowledgment system).</li>
+                                <li><strong>Security:</strong> None. There is no username or password requirement.</li>
+                                <li><strong>Capabilities:</strong></li>
+                                <li>- <strong>Low Overhead:</strong> Ideal for booting diskless workstations or small devices.</li>
+                                <li>- <strong>Speed in LANs:</strong> Very fast for small files because it lacks the "handshaking" overhead of TCP.</li>
+                                <li>- <strong>Recovery:</strong> Often used to push a fresh IOS image to a router in 'rommon' mode if the original OS is corrupted.</li>
+                            </ul>
+
+                            <h3><strong>2. FTP (File Transfer Protocol)</strong></h3>
+                            <p>FTP is the more robust, "heavy-duty" big brother of TFTP. It provides reliability and basic security features.</p>
+                            <ul>
+                                <li><strong>Protocol/Port:</strong> Uses <strong>TCP ports 20 (Data)</strong> and <strong>21 (Control)</strong>.</li>
+                                <li><strong>Connection Type:</strong> Connection-oriented. It ensures that every packet arrives correctly.</li>
+                                <li><strong>Security:</strong> Requires a username and password (though note that these are sent in plain text unless you use SFTP/FTPS).</li>
+                                <li><strong>Capabilities:</strong></li>
+                                <li>- <strong>Reliability:</strong> Since it uses TCP, it handles error recovery and flow control.</li>
+                                <li>- <strong>Large File Support:</strong> Better at handling large IOS images over unstable or wide-area network (WAN) links.</li>
+                                <li>- <strong>File Management:</strong> Allows users to list, delete, and rename directories on the server.</li>
+                            </ul>
+
+                            <table>
+                                <caption>
+                                    <b>Key Comparisons at a Glance</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>TFTP</th>
+                                        <th>FTP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Transport Layer</strong></td>
+                                        <td>UDP (Port 69)</td>
+                                        <td>TCP (Ports 20 & 21)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Authentication</strong></td>
+                                        <td>None</td>
+                                        <td>Username/Password</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Directory Browsing</strong></td>
+                                        <td>No</td>
+                                        <td>Yes</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Best Use Case</strong></td>
+                                        <td>Backing up configs, ROMMON recovery</td>
+                                        <td>Transferring large IOS images</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h3><strong>Cisco IOS Configuration Examples</strong></h3>
+                            <p>As a CCNA candidate, you should know how to use these protocols to manage your devices.</p>
+                            <h3><strong>Using TFTP to backup a configuration</strong></h3>
+                            <p>To send your current running configuration to a TFTP server:</p>
+                            <pre>Router# <code>copy running-config tftp:</code>\nAddress or name of remote host []? <code>192.168.1.100</code>\nDestination filename [Router-confg]? <code>MyBackupConfig</code>\n!!\n654 bytes copied in 0.521 secs (1255 bytes/sec)</pre>
+
+                            <h3><strong>Using FTP to backup a configuration</strong></h3>
+                            <p>Because FTP requires a login, you must first define the credentials on the router before initiating the transfer:</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>ip ftp username cisco</code>\nRouter(config)# <code>ip ftp password ccna</code>\nRouter(config)# <code>exit</code>\nRouter# <code>copy running-config ftp://192.168.1.100/MyBackupConfig</code></pre>
+
+                            <h3><strong>Upgrading an IOS Image via TFTP</strong></h3>
+                            <p>If you have a new software image on your TFTP server, you can pull it to your router's flash memory:</p>
+                            <pre>Router# <code>copy tftp: flash:</code>\nAddress or name of remote host []? <code>10.1.1.50</code>\nSource filename []? <code>c2900-universalk9-mz.SPA.155-3.M3.bin</code>\nDestination filename <code>[c2900-universalk9-mz.SPA.155-3.M3.bin]? </code>\nAccessing tftp://10.1.1.50/c2900-universalk9-mz.SPA.155-3.M3.bin...\nLoading... ############################################\n[OK - 33591764 bytes]</pre>
+
+                            <h3><strong>Pro-Tip for the Exam:</strong></h3>
+                            <p>Remember that <strong>TFTP</strong> is the default choice for most quick Cisco operations, but <strong>FTP</strong> is preferred when you are transferring files across a WAN or need to ensure the file integrity of a very large image!</p>
                         `
                     },
                     {
                         id: "4.10",
-                        title: "4.10 Wireless Roaming & Architecture Details",
-                        summary: "Layer 2 vs Layer 3 Roaming, Mobility Groups, Anchor WLCs",
+                        title: "4.10 General",
+                        summary: "Wireless Client Roaming & WLAN Architecture Details",
                         content: `
-                            <p><strong>L3 Roaming:</strong> Uses CAPWAP Mobility Tunnels between Anchor WLC and Foreign WLC so clients keep their original IP address while roaming across subnets.</p>
+                            <p>Adding a brief note on Layer 2 vs. Layer 3 roaming on a WLC will round out your wireless section nicely.</p>
+
+                            <h3><strong>Roaming</strong></h3>
+                            <p>In the world of Cisco wireless, we’ve moved far beyond simple standalone routers.</p>
+
+                            <h3><strong>1. WLAN Architecture: The Split-MAC Design</strong></h3>
+                            <p>In a modern enterprise, we don't usually configure each Access Point (AP) individually. Instead, we use a <strong>Lightweight Access Point (LAP)</strong> and a <strong>Wireless LAN Controller (WLC)</strong>. This is known as the <strong>Split-MAC Architecture</strong>.<br>The responsibilities are split using the <strong>CAPWAP</strong> (Control and Provisioning of Wireless Access Points) protocol:</p>
+                            <ul>
+                                <li><strong>The LAP handles "Real-time" duties:</strong></li>
+                                <li>- Beacons and Probe Responses.</li>
+                                <li>- Packet buffering and transmission.</li>
+                                <li>- Frame synchronization.</li>
+                                <li><strong>The WLC handles "Management" duties:</strong></li>
+                                <li>- Authentication and Key management.</li>
+                                <li>- Radio Resource Management (RRM) – choosing channels and power levels.</li>
+                                <li>- Roaming coordination.</li>
+                            </ul>
+
+                            <h3><strong>CAPWAP Tunneling</strong></h3>
+                            <p>The LAP and WLC communicate through two tunnels:</p>
+                            <ul>
+                                <li><strong>Control Port (UDP 5246):</strong> For management traffic (configuring the AP).</li>
+                                <li><strong>Data Port (UDP 5247):</strong> Encapsulates the actual client data traffic.</li>
+                            </ul>
+
+                            <h3><strong>2. Deployment Models</strong></h3>
+                            <p>How you place your WLC depends on the size of your network:</p>
+                            <ul>
+                                <li><strong>Centralized (Local Mode):</strong> The WLC is in a central data center. All wireless traffic is tunneled back to it.</li>
+                                <li><strong>FlexConnect:</strong> Used for branch offices. If the connection to the central WLC is lost, the AP can still switch traffic locally so the branch stays online.</li>
+                                <li><strong>Embedded/Mobility Express:</strong> The WLC function runs directly on an AP or a switch (useful for small sites).</li>
+                            </ul>
+
+                            <h3><strong>3. Understanding Wireless Roaming</strong></h3>
+                            <p>Roaming occurs when a wireless client moves away from the coverage area of one AP and connects to another AP with a stronger signal.<br>For the user, this should be seamless—no dropped Zoom calls or VPN disconnections!</p>
+
+                            <h3><strong>A. Layer 2 Roaming (Intra-Controller)</strong></h3>
+                            <p>This is the simplest form. The client moves between two APs that are both connected to the <strong>same WLC</strong>.</p>
+                            <ul>
+                                <li>- The client stays on the same VLAN and the same IP subnet.</li>
+                                <li>- The WLC simply updates its database to show the client is now on AP-B instead of AP-A.</li>
+                            </ul>
+
+                            <h3><strong>B. Layer 3 Roaming (Inter-Controller)</strong></h3>
+                            <p>This happens when a client moves between APs connected to <strong>different WLCs</strong>.</p>
+                            <ul>
+                                <li><strong>Inter-Controller L2 Roaming:</strong> If both WLCs share the same VLAN for that WLAN, the client keeps its IP.</li>
+                                <li><strong>Inter-Controller L3 Roaming:</strong>If the new WLC does <strong>not</strong> have access to the original VLAN, we use a <strong>Mobility Tunnel</strong>.</li>
+                                <li>- <strong>Anchor Controller:</strong> The original WLC where the client first connected.</li>
+                                <li>- <strong>Foreign Controller:</strong> The new WLC where the client is currently located.</li>
+                                <li>- Traffic is tunneled from the Foreign WLC back to the Anchor WLC so the client can keep its original IP address!</li>
+                            </ul>
+
+                            <h3><strong>4. Mobility Groups</strong></h3>
+                            <p>To allow WLCs to coordinate roaming, they must be part of the same <strong>Mobility Group</strong>. This is a list of WLCs that "trust" each other and share client context.</p>
+
+                            <h3><strong>5. Useful CLI Commands (Cisco WLC)</strong></h3>
+                            <p>While most WLC management is done via a GUI, as a CCNA, you should know how to verify the status via the Command Line Interface (CLI).<br>To see which APs are joined to your controller:</p>
+                            <pre>Router# <code>show ap summary</code></pre>
+                            <p>To check the mobility configuration and see other controllers in the group:</p>
+                            <pre>Router# <code>show mobility summary</code></pre>
+                            <p>To view details about a specific client and their roaming status:</p>
+                            <pre>Router# <code>show client detail</code></pre>
+                            <p>To verify the CAPWAP status of your APs:</p>
+                            <pre>Router# <code>show capwap ip stats</code></pre>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table for the Exam</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Autonomous AP </th>
+                                        <th>Lightweight AP (LAP)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Management</strong></td>
+                                        <td>Individual (one by one)</td>
+                                        <td>Centralized via WLC</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Protocol</strong></td>
+                                        <td>None (Standalone)</td>
+                                        <td>CAPWAP</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Scalability</strong></td>
+                                        <td>Low</td>
+                                        <td>High</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Roaming Supporte</strong></td>
+                                        <td>Limited (L2 only)</td>
+                                        <td>Advanced (L2 and L3)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p>Roaming and Architecture are foundational for the CCNA 200-301 exam.<br>Remember: <strong>CAPWAP</strong> is the glue, the <strong>WLC</strong> is the brain, and <strong>Mobility Groups</strong> make roaming possible!</p>
                         `
                     }
                 ]
