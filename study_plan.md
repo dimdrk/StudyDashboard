@@ -3188,7 +3188,7 @@ Router(config-line)# exit
 | **Mitigation** 	| Reducing the risk 			| Installing a window lock and alarm 	|
 
 --------------------------------------------------------------------------------------------------------
-*** 5.1 Describe security program elements (user awareness, training, and physical access control). ***
+*** 5.2 Describe security program elements (user awareness, training, and physical access control). ***
 --------------------------------------------------------------------------------------------------------
 
 ### 1. User Awareness

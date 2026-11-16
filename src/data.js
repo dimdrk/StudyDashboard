@@ -3020,10 +3020,84 @@
                     },
                     {
                         id: "5.2",
-                        title: "5.2 Device Access & Local Passwords",
-                        summary: "Enable Secret, VTY Lines, service password-encryption",
+                        title: "5.2 Describe security program elements",
+                        summary: "user awareness, training, and physical access control",
                         content: `
-                            <pre><code>Router(config)# enable secret Class@123\nRouter(config)# username admin privilege 15 secret SecurePass!\nRouter(config)# service password-encryption</code></pre>
+                            <h3><strong>1. User Awareness</strong></h3>
+                            <p>User awareness is about creating a "Human Firewall." It focuses on changing the mindset of employees so they recognize and respond to potential threats.</p>
+                            <p><strong>The Goal:</strong> To ensure users understand that they are targets and play a role in organizational security.</p>
+                            <ul>
+                                <li><strong>Key Topics Covered:</strong></li>
+                                <li>- <strong>Phishing Recognition:</strong> Teaching users how to spot suspicious emails, links, and attachments.</li>
+                                <li>- <strong>Social Engineering:</strong> Helping staff recognize tactics like "Pretexting" (where an attacker poses as helpdesk staff) or "Tailgating" (following someone into a secure area).</li>
+                                <li>- <strong>Password Hygiene:</strong> Encouraging the use of strong, unique passwords and Multi-Factor Authentication (MFA).</li>
+                            </ul>
+                            <p><strong>Method:</strong> This is usually delivered through newsletters, posters, or short "security tip" videos.</p>
+                            
+                            <h3><strong>2. Training</strong></h3>
+                            <p>While awareness is about <b>recognition</b>, training is about <b>procedure and skill</b>. Training is more formal and often role-specific.</p>
+                            <p><strong>The Goal:</strong> To provide employees with the specific knowledge they need to follow security policies and use tools correctly.</p>
+                            <ul>
+                                <li><strong>Types of Training:</strong></li>
+                                <li>- <strong>Onboarding Training:</strong> Ensuring every new hire knows the "Acceptable Use Policy" (AUP).</li>
+                                <li>- <strong>Role-Based Training:</strong> Network administrators might receive specialized training on hardening Cisco IOS devices, while developers learn secure coding practices.</li>
+                                <li>- <strong>Compliance Training:</strong> Necessary for industries dealing with sensitive data (like HIPAA for healthcare or PCI-DSS for credit cards).</li>
+                                <li>- <strong>Simulated Attacks:</strong> Conducting "Mock Phishing" campaigns to see how employees react in real-time and providing immediate remedial training if they fail the test.</li>
+                            </ul>
+                            
+                            <h3><strong>3. Physical Access Control</strong></h3>
+                            <p>There is a common saying in networking: "If an attacker has physical access to your device, it is no longer your device."<br>Physical access control protects the hardware (routers, switches, servers, and cabling) from unauthorized hands.</p>
+                            <p>Physical security is typically implemented in <strong>layers</strong>:</p>
+                            <ul>
+                                <li><strong>Outer Perimeter:</strong> Fences, gates, and security guards.</li>
+                                <li><strong>Building Entry:</strong> Badge readers, keycards, or "Man-traps" (small spaces where one door must close before the next opens).</li>
+                                <li><strong>The Server Room:</strong> This should be the most restricted area.</li>
+                                <li>- <strong>Biometrics:</strong> Fingerprint or retina scanners.</li>
+                                <li>- <strong>Electronic Logging:</strong> Recording exactly who entered and at what time.</li>
+                                <li><strong>The Rack Level:</strong> Locking cabinets and cages. Even inside a secure room, individual equipment racks should be locked.</li>
+                            </ul>
+                            
+                            <h3><strong>Common Physical Controls:</strong></h3>
+                            <ul>
+                                <li><strong>CCTV (Closed-Circuit Television):</strong> For monitoring and forensic evidence after an event.</li>
+                                <li><strong>Environmental Controls:</strong> Smoke detectors, fire suppression (FM-200 gas), and HVAC monitoring to prevent hardware failure.</li>
+                                <li><strong>Disabling Unused Ports:</strong> While this feels like a digital task, it's a response to physical threats.	We use Cisco IOS to "shutdown" ports on a switch so a visitor can't just plug a laptop into a wall jack.</li>
+                            </ul>
+                            
+                            <h3><strong>Example:</strong> Hardening a physical switch port to prevent unauthorized access</h3>
+                            <pre>Switch# <code>configure terminal</code>\nSwitch(config)# <code>interface gigabitEthernet 0/1</code>\nSwitch(config-if)# <code>shutdown</code>\nSwitch(config-if)# <code>description DISABLED_FOR_SECURITY</code>\nSwitch(config-if)# <code>exit</code></pre>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Element</th>
+                                        <th>Focus</th>
+                                        <th>Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>User Awareness</strong></td>
+                                        <td>Mindset & Recognition</td>
+                                        <td>Spotting a phishing email.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Training</strong></td>
+                                        <td>Skills & Procedures</td>
+                                        <td>Knowing how to report a lost ID badge.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Physical Access</strong></td>
+                                        <td>Hardware Protection</td>
+                                        <td>Using a thumbprint scanner to enter the data center.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p>By combining these three elements, a network administrator ensures that the "soft" spots of the organization—the people and the physical gear—are just as secure as the digital configurations!</p>
                         `
                     },
                     {
