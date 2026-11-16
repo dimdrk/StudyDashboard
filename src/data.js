@@ -3102,45 +3102,556 @@
                     },
                     {
                         id: "5.3",
-                        title: "5.3 AAA Concepts & Protocols",
+                        title: "5.3 Configure and verify device access control using local passwords",
                         summary: "Authentication, Authorization, Accounting: TACACS+ vs RADIUS",
                         content: `
+                            <p>Securing access to your Cisco routers and switches is one of the most fundamental tasks in network administration. We want to ensure that only authorized personnel can enter <strong>User EXEC mode</strong> and <strong>Privileged EXEC mode</strong>. To do this, we use local passwords stored on the device itself.<br>Let’s break this down into four key areas:<br>Securing the Console, securing Remote Access (VTY), securing Privileged EXEC mode, and using a Local User Database.</p>
+                            
+                            <h3><strong>1. Securing Privileged EXEC Mode</strong></h3>
+                            <p>This is the most important password. It prevents unauthorized users from entering "enable" mode, where they can change configurations.</p>
+                            <p>We use the 'enable secret' command because it automatically hashes (encrypts) the password using a strong algorithm (like MD5 or SHA-256).</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>enable secret Class@123</code></pre>
+                            
+                            <h3><strong>2. Securing the Console Port</strong></h3>
+                            <p>The Console port provides physical access to the device. We secure this to prevent someone with a rollover cable from gaining immediate access.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>line console 0</code>\nRouter(config-line)# <code>password ConsolePass!</code>\nRouter(config-line)# <code>login</code>\nRouter(config-line)# <code>exit</code></pre>
+                            
+                            <h3><strong>3. Securing Virtual Terminal (VTY) Lines</strong></h3>
+                            <p>VTY lines are used for remote management via Telnet or SSH. By default, many Cisco devices will not allow remote access unless a password is set or the 'login local' command is used.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>line vty 0 4</code>\nRouter(config-line)# <code>password ConsolePass!</code>\nRouter(config-line)# <code>login</code>\nRouter(config-line)# <code>exit</code></pre>
+                            <p>* Note: In modern environments, we prefer SSH over Telnet, but setting a VTY password is the basic starting point.</p>
+                            
+                            <h3><strong>4. Creating a Local User Database (Best Practice)</strong></h3>
+                            <p>Instead of a single password for everyone, it is much more professional to create specific usernames and passwords. This allows for better accountability.<br>We then tell the lines to use the local database using the 'login local' command.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>username Admin01 privilege 15 secret MyStrongPass!</code>\nRouter(config)# <code>line console 0</code>\nRouter(config-line)# <code>login local</code>\nRouter(config-line)# <code>exit</code>\nRouter(config)# <code>line vty 0 15</code>\nRouter(config-line)# <code>login local</code>\nRouter(config-line)# <code>exit</code></pre>
+                            
+                            <h3><strong>5. Encrypting Clear-Text Passwords</strong></h3>
+                            <p>Commands like 'password ConsolePass!' store the password in plain text in the configuration file. To hide these from "shoulder surfers," use the global encryption service:</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>service password-encryption</code></pre>
+                            <p>* Tip:service password-encryption only uses a weak Vigenère cipher (Type 7) to protect plain-text passwords in the config file, which can easily be decrypted.<br>It is meant to stop casual shoulder-surfing, whereas enable secret and username ... secret use strong cryptographic hashing (MD5/SHA-256/SHA-512) which cannot be easily reversed.</p>
+                            
+                            <h3><strong>6. Verification</strong></h3>
+                            <p>Now that we have configured our security, we must verify it. Use the following commands to check your work:</p>
+                            <p><strong>Check the Running Configuration:</strong></p>
+                            <p>This allows you to see if the passwords are encrypted and applied to the correct lines.</p>
+                            <pre>Router# <code>show running-config | section line</code>\nRouter# <code>show running-config | include enable secret</code></pre>
+                            
+                            <h3><strong>Test the Access:</strong></h3>
+                            <p>The best way to verify is to exit the session and try to log back in.</p>
+                            <p>This allows you to see if the passwords are encrypted and applied to the correct lines.</p>
+                            <pre>Router# <code>exit</code></pre>
+                            <p>When you press Enter, it should prompt for a <strong>Username</strong> (if you used 'login local') or just a <strong>Password</strong> (if you used 'login').<br>Once inside, type 'enable'. It should prompt for the <strong>Enable Secret</strong>.</p>
+                            
+                            <h3><strong>Check Current Sessions:</strong></h3>
+                            <p>To see who is currently logged into the device:</p>
+                            <pre>Router# <code>show users</code></pre>
+
                             <table>
-                                <thead><tr><th>Protocol</th><th>Transport</th><th>Encryption</th><th>AAA Separation</th></tr></thead>
+                                <caption>
+                                    <b>Summary Table  for your CCNA Notes:</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Command</th>
+                                        <th>Purpose</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
-                                    <tr><td><strong>TACACS+</strong></td><td>TCP 49</td><td>Entire Packet</td><td>Separated</td></tr>
-                                    <tr><td><strong>RADIUS</strong></td><td>UDP 1812/1813</td><td>Password Only</td><td>Combined</td></tr>
+                                    <tr>
+                                        <td><strong><code>enable secret</code></strong></td>
+                                        <td>Secures Privileged EXEC mode with a hashed password.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong><code>login</code></strong></td>
+                                        <td>Tells the line to prompt for a password.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong><code>login local</code></strong></td>
+                                        <td>Tells the line to check the local username/password database.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong><code>service password-encryption</code></strong></td>
+                                        <td>Encrypts plain-text passwords in the config file.</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         `
                     },
                     {
                         id: "5.4",
-                        title: "5.4 Wireless Security: WPA, WPA2, WPA3",
-                        summary: "TKIP, AES/CCMP, SAE (Simultaneous Authentication of Equals)",
+                        title: "5.4 Describe security password policy elements",
+                        summary: "management, complexity, multifactor authentication, certificates, biometrics",
                         content: `
-                            <p>WPA3 replaces Pre-Shared Key 4-way handshakes with <strong>SAE (Dragonfly)</strong> to eliminate offline dictionary attacks.</p>
+                            <p>In the world of networking, securing the <strong>Management Plane</strong> (the way we access and control our devices) is just as important as routing packets.<br>A robust security password policy isn't just about one long password; it’s a layered approach called <strong>Defense in Depth</strong>.</p>
+                            
+                            <h3><strong>1. Password Management</strong></h3>
+                            <p>Management refers to the administrative rules governing how passwords are created, stored, and retired. In a Cisco environment, we often move away from local databases to centralized management using <strong>AAA (Authentication, Authorization, and Accounting)</strong> via protocols like RADIUS or TACACS+.</p>
+                            <ul>
+                                <li><strong>Password Aging:</strong> Forcing users to change passwords every 30, 60, or 90 days.</li>
+                                <li><strong>Password History:</strong> Preventing users from reusing their last 5–10 passwords.</li>
+                                <li><strong>Account Lockout:</strong> Disabling an account after a certain number of failed attempts (e.g., 3 or 5) to prevent brute-force attacks.</li>
+                            </ul>
+                            
+                            <h3><strong>2. Password Complexity</strong></h3>
+                            <p>Complexity ensures that passwords are not easily guessable by humans or crackable by dictionary attacks. A strong policy typically requires:</p>
+                            <ul>
+                                <li><strong>Minimum Length:</strong> Usually at least 10–12 characters.</li>
+                                <li><strong>Character Variety:</strong> A mix of uppercase, lowercase, numbers, and special symbols (@, #, $, etc.).</li>
+                                <li><strong>No Personal Info:</strong> Avoiding names, birthdays, or common words like "Cisco123."</li>
+                            </ul>
+                            
+                            <h3><strong>Cisco IOS Configuration Example:</strong></h3>
+                            <p>To enforce a minimum length and encrypt passwords in the configuration file:</p>
+                            <pre># Set a minimum password length of 10 characters\nRouter(config)# <code>security passwords min-length 10</code>\n\n# Encrypt clear-text passwords in the running-config\nRouter(config)# <code>service password-encryption</code>\n\n# Use 'secret' instead of 'password' for stronger MD5/SHA hashing\nRouter(config)# <code>username Admin algorithm-type sha256 secret P@ssw0rd123!</code></pre>
+                            
+                            <h3><strong>3. Multi-Factor Authentication (MFA)</strong></h3>
+                            <p>MFA is one of the most effective ways to stop unauthorized access. It requires a user to provide two or more "factors" of evidence to prove their identity.</p>
+                            <p>These factors are categorized as:</p>
+                            <ul>
+                                <li><strong>Something you know:</strong> A password or PIN.</li>
+                                <li><strong>Something you have:</strong> A hardware token, a smartphone with a push app (like Cisco Duo), or a smart card.</li>
+                                <li><strong>Something you are:</strong> Biometrics (fingerprints, facial recognition).</li>
+                            </ul>
+                            
+                            <h3><strong>4. Certificates (PKI)</strong></h3>
+                            <p>Digital certificates move security beyond simple strings of text. They rely on <strong>Public Key Infrastructure (PKI)</strong>.</p>
+                            <ul>
+                                <li><strong>How it works:</strong> A Certificate Authority (CA) issues a digital certificate that binds a public key to an identity.</li>
+                                <li><strong>In Networking:</strong> We use certificates for <strong>Site-to-Site VPNs</strong> (IPsec) or <strong>AnyConnect VPNs</strong>.</li>
+                                <li><strong>SSH via Keys:</strong> Instead of typing a password, an admin can use an RSA private/public key pair to authenticate to a router.</li>
+                            </ul>
+                            
+                            <h3><strong>5. Biometrics</strong></h3>
+                            <p>Biometrics use unique biological traits for identification ("Something you are").</p>
+                            <ul>
+                                <li><strong>Types:</strong> Fingerprint scanners, retina/iris scans, facial recognition, and voice patterns.</li>
+                                <li><strong>Pros:</strong> Extremely difficult to "forget" or "lose."</li>
+                                <li><strong>Cons:</strong> If biometric data is breached, it cannot be "reset" like a password. In high-security data centers, biometrics are often used at the physical entry point before a technician even touches a console cable.</li>
+                            </ul>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table for your CCNA Prep:</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Element</th>
+                                        <th>Focus</th>
+                                        <th>Key Technology</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Management</strong></td>
+                                        <td>Lifecycle & Control</td>
+                                        <td>AAA, RADIUS, TACACS+</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Complexity</strong></td>
+                                        <td>Entropy & Strength</td>
+                                        <td>'min-length', SHA-256 Hashing</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>MFA</strong></td>
+                                        <td>Layered Verification</td>
+                                        <td>Cisco Duo, TOTP Tokens</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Certificates</strong></td>
+                                        <td>Identity & Encryption</td>
+                                        <td>PKI, RSA, X.509</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Biometrics</strong></td>
+                                        <td>Physical/Inherent Traits</td>
+                                        <td>Fingerprint/Facial Recognition</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         `
                     },
                     {
                         id: "5.5",
-                        title: "5.5 Layer 2 Security Features",
-                        summary: "DHCP Snooping, Dynamic ARP Inspection (DAI), Port Security",
+                        title: "5.5 Describe IPsec remote access and site-to-site VPNs",
+                        summary: "Internet Protocol Security",
                         content: `
-                            <pre><code># Port Security Sticky Config\nSwitch(config-if)# switchport mode access\nSwitch(config-if)# switchport port-security\nSwitch(config-if)# switchport port-security mac-address sticky\nSwitch(config-if)# switchport port-security violation shutdown</code></pre>
+                            <p>To understand IPsec (Internet Protocol Security) VPNs, you first need to know that their primary job is to create a secure, encrypted "tunnel" over an untrusted network, like the Internet. IPsec ensures <strong>Confidentiality</strong> (encryption), <strong>Integrity</strong> (no tampering), and <strong>Authentication</strong> (proving who you are).<br>Let's break down the two main types of IPsec VPNs: <strong>Site-to-Site</strong> and <strong>Remote Access</strong>.</p>
+                            
+                            <h3><strong>1. Site-to-Site VPN</strong></h3>
+                            <p>Think of a Site-to-Site VPN as a permanent bridge between two offices (e.g., a Branch Office and Headquarters).</p>
+                            <ul>
+                                <li><strong>How it works:</strong> The VPN tunnel is established between two dedicated network devices, such as Cisco routers or ASA/FTD firewalls.</li>
+                                <li><strong>The User Experience:</strong> Users at either site have no idea a VPN exists. They simply send traffic to internal IP addresses at the other office, and the routers handle the encryption and decryption automatically.</li>
+                                <li><strong>Key Characteristics:</strong></li>
+                                <li>- Static and always-on (usually).</li>
+                                <li>- Connects entire networks to each other.</li>
+                                <li>- Uses <strong>IPsec</strong> almost exclusively.</li>
+                            </ul>
+                            
+                            <h3><strong>2. Remote Access VPN</strong></h3>
+                            <p>Think of this as a temporary connection for a single user "on the go" (e.g., a telecommuter working from a coffee shop).</p>
+                            <ul>
+                                <li><strong>How it works:</strong> A connection is established between a single user’s device (PC, Tablet, Phone) and a central VPN Gateway (a Cisco ASA or Router).</li>
+                                <li><strong>The User Experience:</strong> The user must manually initiate the connection, often by logging into a client like <strong>Cisco AnyConnect</strong>. They usually provide credentials (Username/Password + MFA).</li>
+                                <li><strong>Key Characteristics:</strong></li>
+                                <li>- Dynamic and on-demand.</li>
+                                <li>- Connects an individual host to a network.</li>
+                                <li>- Can use <strong>IPsec</strong> or <strong>SSL/TLS</strong> (Clientless or Client-based). almost exclusively.</li>
+                            </ul>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table for your CCNA Prep:</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Site-to-Site VPN</th>
+                                        <th>Remote Access VPN</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Endpoints</strong></td>
+                                        <td>Two Gateways (Router to Router)</td>
+                                        <td>Client to Gateway (PC to Router)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Initiation</strong></td>
+                                        <td>Automated/Always-on</td>
+                                        <td>Manual (User logs in)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Software</strong></td>
+                                        <td>None required on PCs</td>
+                                        <td>Requires VPN Client (AnyConnect)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Topology</strong></td>
+                                        <td>Connects LAN to LAN</td>
+                                        <td>Connects Host to LAN</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h3><strong>Basic Configuration: Site-to-Site VPN (Cisco IOS)</strong></h3>
+                            <p>In the CCNA curriculum, you’ll often see the configuration for a Site-to-Site IPsec VPN using the <strong>IKEv1</strong> (Internet Key Exchange) framework.<br>Here is a simplified look at the steps required on a router:</p>
+                            <h3><strong>Step 1: Configure the ISAKMP Policy (Phase 1)</strong></h3>
+                            <p>This defines how the two routers will talk to each other to set up the tunnel.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>crypto isakmp policy 10</code>\nRouter(config-isakmp)# <code>encryption aes</code>\nRouter(config-isakmp)# <code>hash sha256</code>\nRouter(config-isakmp)# <code>authentication pre-share</code>\nRouter(config-isakmp)# <code>group 14</code>\nRouter(config-isakmp)# <code>exit</code>\nRouter(config)# <code>crypto isakmp key MySecretKey address 203.0.113.1</code></pre>
+                            <h3><strong>Step 2: Configure the Transform Set (Phase 2)</strong></h3>
+                            <p>This defines how the actual data (the payload) will be encrypted.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>crypto ipsec transform-set MY_SET esp-aes esp-sha256-hmac</code></pre>
+                            <h3><strong>Step 3: Create a Crypto Map and Apply it</strong></h3>
+                            <p>The Crypto Map ties everything together: the traffic to encrypt (via an ACL) and the peer IP address.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>access-list 101 permit ip 192.168.1.0 0.0.0.255 192.168.2.0 0.0.0.255</code>\n\nRouter(config)# <code>crypto map MY_MAP 10 ipsec-isakmp</code>\nRouter(config-crypto-map)# <code>set peer 203.0.113.1</code>\nRouter(config-crypto-map)# <code>set transform-set MY_SET</code>\nRouter(config-crypto-map)# <code>match address 101</code>\nRouter(config-crypto-map)# <code>exit</code>\n\nRouter(config)# <code>interface GigabitEthernet0/0</code>\nRouter(config-f)# <code>crypto map MY_MAP</code></pre>
+
+                            <h3><strong>Summary</strong></h3>
+                            <ul>
+                                <li><strong>Site-to-Site:</strong> Connects two fixed locations. It's like a transparent cable between buildings</li>
+                                <li><strong>Remote Access:</strong> Connects a mobile user to the office. It's like a secure doorway for individuals.</li>
+                            </ul>
                         `
                     },
                     {
                         id: "5.6",
-                        title: "5.6 Access Control Lists (ACLs)",
+                        title: "5.6 Configure and verify access control lists (ACLs)",
                         summary: "Standard (1-99) vs Extended (100-199), Wildcard Masks",
                         content: `
-                            <p>Standard ACLs check <strong>Source IP only</strong> (place near destination). Extended ACLs check <strong>Source/Dest IP, Protocol, Port</strong> (place near source).</p>
+                            <p>Think of <strong>Access Control Lists (ACLs)</strong> as security guards for your router. It inspects packets based on a set of rules to decide whether to let them through (permit) or throw them away (deny).</p>
+
+                            <h3><strong>1. The Two Main Types of ACLs</strong></h3>
+                            <p>Before we configure them, you must know which one to use:</p>
+                            <ul>
+                                <li><strong>Standard ACLs (1-99, 1300-1999):</strong> Only check the <strong>Source IP Address</strong></li>
+                                <li>- <strong>Rule of Thumb:</strong> Place these as close to the <strong>destination</strong> as possible.</li>
+                                <li><strong>Extended ACLs (100-199, 2000-2699):</strong> Check Source/Destination IP, Protocol (TCP/UDP/ICMP), and Port Numbers.</li>
+                                <li>- <strong>Rule of Thumb:</strong> Place these as close to the <strong>source</strong> as possible to save bandwidth.</li>
+                            </ul>
+
+                            <h3><strong>2. Configuring Numbered ACLs</strong></h3>
+                            <h3><strong>Standard ACL Example</strong></h3>
+                            <p>We want to block a single host (192.168.1.10) from reaching the entire 10.1.1.0/24 network.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>access-list 10 deny host 192.168.1.10</code>\nRouter(config)# <code>access-list 10 permit any</code>\n\n* Note: Every ACL has an "Implicit Deny" at the end.\n  If you don't add 'permit any', all traffic will be blocked!</pre>
+
+                            <h3><strong>Extended ACL Example</strong></h3>
+                            <p>We want to block PC 192.168.1.10 from accessing a Web Server (10.1.1.50) via HTTP (Port 80), but allow everything else.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>access-list 101 deny tcp host 192.168.1.10 host 10.1.1.50 eq 80</code>\nRouter(config)# <code>access-list 101 permit ip any any</code></pre>
+
+                            <h3><strong>3. Configuring Named ACLs (Recommended)</strong></h3>
+                            <p>Named ACLs are easier to manage because you can delete specific lines without deleting the whole list.</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>ip access-list extended SECURE_OFFICE</code>\nRouter(config-ext-nacl)# <code>deny icmp any host 10.1.1.50</code>\nRouter(config-ext-nacl)# <code>permit ip 192.168.1.0 0.0.0.255 any</code>\nRouter(config-ext-nacl)# <code>exit</code></pre>
+
+                            <h3><strong>4. Applying the ACL to an Interface</strong></h3>
+                            <p>An ACL does nothing until it is applied to an interface in a specific direction (<strong>in</strong> or <strong>out</strong>).</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/0</code>\nRouter(config-if)# <code>ip access-group SECURE_OFFICE in</code>\nRouter(config-if)# <code>exit</code></pre>
+
+                            <h3><strong>5. Verification Commands</strong></h3>
+                            <p>To ensure your ACL is working correctly and see how many packets have matched your rules, use these commands:</p>
+                            <pre># View all ACLs and match counters:\nRouter# <code>show access-lists</code>\n\n#Check which ACL is applied to an interface:\nRouter# <code>show ip interface GigabitEthernet0/0</code>\n\nCheck the running configuration:\nRouter# <code>show running-config | section access-list</code></pre>
+
+                            <h3><strong>Pro-Tips for the CCNA Exam:</strong></h3>
+                            <ul>
+                                <li><strong>Top-Down Processing:</strong> The router reads ACLs from the top line down. As soon as it finds a match, it stops looking. Put your most specific rules at the top!</li>
+                                <li><strong>Wildcard Masks:</strong> Remember that ACLs use wildcard masks (the inverse of a subnet mask).</li>
+                                <li>- Subnet mask '255.255.255.0' = Wildcard '0.0.0.255'.</li>
+                                <li><strong>The Any Keyword:</strong> '0.0.0.0 255.255.255.255' is equivalent to the keyword 'any'.</li>
+                            </ul>
                         `
                     },
                     {
                         id: "5.7",
-                        title: "5.7 Management & Control Plane Security (CoPP)",
+                        title: "5.7 Configure and verify Layer 2 security features",
+                        summary: "DHCP snooping, dynamic ARP inspection, and port security",
+                        content: `
+                            <p>In the world of the CCNA, securing the access layer is critical because it's where users first connect to your network.<br>If the "front door" isn't locked, attackers can easily perform Man-in-the-Middle (MitM) attacks or overwhelm your switch.</p>
+
+                            <h3><strong>1. DHCP Snooping</strong></h3>
+                            <p>DHCP Snooping acts like a firewall between untrusted hosts and trusted DHCP servers.<br>It prevents a rogue DHCP server from handing out incorrect IP addresses and default gateways to your clients.</p>
+                            <h3><strong>Configuration:</strong></h3>
+                            <ul>
+                                <li>1. Enable DHCP snooping globally.</li>
+                                <li>2. Specify the VLANs to protect.</li>
+                                <li>3. Identify the "Trusted" port (the one leading to your real DHCP server). All other ports are "Untrusted" by default.</li>
+                            </ul>
+                            <pre># Global configuration\nSwitch(config)# <code>ip dhcp snooping</code>\nSwitch(config)# <code>ip dhcp snooping vlan 10,20</code>\n\n# Configure the Trusted interface (Uplink to Server/Router)\nSwitch(config)# <code>interface GigabitEthernet0/1</code>\nSwitch(config-if)# <code>ip dhcp snooping trust</code>\nSwitch(config-if)# <code>exit</code>\n\n# Optional: Rate limit untrusted ports to prevent DoS\nSwitch(config)# <code>interface range FastEthernet0/1 - 24</code>\nSwitch(config-if)# <code>ip dhcp snooping limit rate 10</code></pre>
+                            <h3><strong>Verification:</strong></h3>
+                            <pre>Switch# <code>show ip dhcp snooping</code>\nSwitch# <code>show ip dhcp snooping binding</code></pre>
+
+                            <h3><strong>2. Dynamic ARP Inspection (DAI)</strong></h3>
+                            <p>DAI prevents ARP Poisoning and Man-in-the-Middle attacks.<br>It works by intercepting ARP requests and responses on untrusted ports and validating them against the <strong>DHCP Snooping Binding Table</strong>.<br>If the MAC-to-IP mapping doesn't match the table, the ARP packet is dropped.</p>
+                            <p>* <strong>Note</strong>: You must have DHCP Snooping enabled for DAI to work!</p>
+                            <h3><strong>Configuration:</strong></h3>
+                            <ul>
+                                <li>1. Enable DAI for specific VLANs.</li>
+                                <li>2. Trust the interface connected to other switches or routers.</li>
+                            </ul>
+                            <pre># Global configuration\nSwitch(config)# <code>ip arp inspection vlan 10,20</code>\n\n# Configure the Trusted interface\nSwitch(config)# <code>interface GigabitEthernet0/1</code>\nSwitch(config-if)# <code>ip arp inspection trust</code>\nSwitch(config-if)# <code>exit</code></pre>
+                            <h3><strong>Verification:</strong></h3>
+                            <pre>Switch# <code>show ip arp inspection</code>\nSwitch# <code>show ip arp inspection statistics</code></pre>
+
+                            <h3><strong>3. Port Security</strong></h3>
+                            <p>Port Security allows you to restrict input to an interface by limiting the MAC addresses allowed to send traffic into that port. It prevents MAC Address Flooding attacks.</p>
+                            <h3><strong>Configuration:</strong></h3>
+                            <ul>
+                                <li>1. Set the port to access mode (Port security doesn't work on dynamic trunking ports).</li>
+                                <li>2. Enable port security.</li>
+                                <li>3. Define the maximum number of MACs.</li>
+                                <li>4. Use "Sticky" learning to save learned MACs to the running config.</li>
+                                <li>5. Set a violation mode (Shutdown, Restrict, or Protect).</li>
+                            </ul>
+                            <pre>Switch(config)# <code>interface FastEthernet0/1</code>\nSwitch(config-if)# <code>switchport mode access</code>\nSwitch(config-if)# <code>switchport port-security</code>\nSwitch(config-if)# <code>switchport port-security maximum 2</code>\nSwitch(config-if)# <code>switchport port-security mac-address sticky</code>\nSwitch(config-if)# <code>switchport port-security violation shutdown</code>\nSwitch(config-if)# <code>exit</code></pre>
+                            <ul>
+                                <li><strong>Violation Modes Explained:</strong></li>
+                                <li>- <strong>Shutdown:</strong> (Default) Port is disabled immediately and put into 'err-disabled' state. Must be manually reset.</li>
+                                <li>- <strong>Restrict:</strong> Drops unauthorized traffic, increments a counter, and sends an SNMP trap/Syslog message. Port stays up.</li>
+                                <li>- <strong>Protect:</strong> Drops unauthorized traffic silently. No notification is sent.</li>
+                            </ul>
+                            <h3><strong>Verification:</strong></h3>
+                            <pre>Switch# <code>show port-security</code>\nSwitch# <code>show port-security interface FastEthernet0/1</code>\nSwitch# <code>show port-security address</code></pre>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table for your CCNA Review</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Primary Goal</th>
+                                        <th>Key Mechanism</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>DHCP Snooping</strong></td>
+                                        <td>Prevent Rogue DHCP Servers</td>
+                                        <td>Trusted vs. Untrusted ports</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>DAI</strong></td>
+                                        <td>Prevent ARP Poisoning</td>
+                                        <td>Validates ARP against DHCP Snooping table</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Port Security</strong></td>
+                                        <td>Prevent MAC Flooding</td>
+                                        <td>Limits number/type of MAC addresses per port</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        `
+                    },
+                    {
+                        id: "5.8",
+                        title: "5.8 Compare authentication, authorization, and accounting (AAA) concepts.",
+                        summary: "Authentication Authorization Accounting",
+                        content: `
+                            <p>In the world of Cisco networking, <strong>AAA (Authentication, Authorization, and Accounting)</strong> is the gold standard for managing network security and access control.<br>Think of AAA like a high-security building with a front desk. Here is how the three components work together:</p>
+
+                            <h3><strong>1. Authentication ("Who are you?")</strong></h3>
+                            <p>Authentication is the first line of defense. It verifies the identity of a user attempting to access the network or a specific device.</p>
+                            <ul>
+                                <li>- <strong>Mechanism:</strong> The user provides credentials (username and password, SSH keys, or certificates).</li>
+                                <li>- <strong>Methods:</strong> You can authenticate against a <strong>local database</strong> (stored on the router/switch) or a <strong>remote server</strong> (like a RADIUS or TACACS+ server).</li>
+                                <li>- <strong>The Question:</strong> "Are you who you say you are?"</li>
+                            </ul>
+                            
+                            <h3><strong>2. Authorization ("What can you do?")</strong></h3>
+                            <p>Once a user is authenticated, Authorization determines what resources they are allowed to access and what commands they are allowed to run.</p>
+                            <ul>
+                                <li>- <strong>Mechanism:</strong> It assigns privilege levels or specific command sets to the user.</li>
+                                <li>- <strong>Example:</strong> A junior admin might only be authorized to use 'show' commands, while a senior admin is authorized to enter 'global configuration' mode.</li>
+                                <li>- <strong>The Question:</strong> "Now that I know who you are, what are you allowed to touch?"</li>
+                            </ul>
+                            
+                            <h3><strong>3. Accounting ("What did you do?")</strong></h3>
+                            <p>Accounting tracks what the user actually did during their session. It records the start and end times, the commands executed, and the data transferred.</p>
+                            <ul>
+                                <li>- <strong>Mechanism:</strong> It generates log files and audit trails.</li>
+                                <li>- <strong>Importance:</strong> This is crucial for security auditing, troubleshooting, and compliance. If a network goes down after a change, accounting tells you exactly who typed the command that caused the crash.</li>
+                                <li>- <strong>The Question:</strong> "What actions did you take while you were logged in?"</li>
+                            </ul>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Comparison Table</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Authentication</th>
+                                        <th>Authorization</th>
+                                        <th>Accounting</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Primary Goal</strong></td>
+                                        <td>Identify the user</td>
+                                        <td>Control access/permissions</td>
+                                        <td>Track user activity</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Action</strong></td>
+                                        <td>Login / Password prompt</td>
+                                        <td>Granting or denying commands</td>
+                                        <td>Logging and reporting</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Analogy</strong></td>
+                                        <td>Showing your ID at the gate</td>
+                                        <td>Having a key to specific rooms</td>
+                                        <td>Security cameras filming you</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h3><strong>Cisco IOS Configuration Example</strong></h3>
+                            <p>To implement AAA on a Cisco device, we first enable the AAA model and then define the methods.<br>Here is a basic configuration using a local database for authentication and authorization.</p>
+                            <pre># 1. Enable AAA\nRouter(config)# <code>aaa new-model</code>\n\n# 2. Create a local user with secret password and privilege level\nRouter(config)# <code>username Admin1 privilege 15 secret Cisco123</code>\n\n# 3. Define Authentication (Use local database)\n# 'default' applies to all lines; 'local' is the method\nRouter(config)# <code>aaa authentication login default local</code>\n\n# 4. Define Authorization (Use local database for exec level)\nRouter(config)# <code>aaa authorization exec default local</code>\n\n# 5. Define Accounting (Log all commands at privilege level 15 to a buffer)\nRouter(config)# <code>aaa accounting commands 15 default start-stop logging</code></pre>
+                            
+                            <h3><strong>RADIUS vs. TACACS+</strong></h3>
+                            <p>In a CCNA environment, you’ll often choose between two protocols to handle AAA remotely:</p>
+                            <ul>
+                                <li>- <strong>TACACS+ (Terminal Access Controller Access-Control System):</strong> Cisco proprietary (mostly), uses TCP, and <strong>separates</strong> the AAA functions. It encrypts the entire packet.</li>
+                                <li>- <strong>RADIUS (Remote Authentication Dial-In User Service)</strong> Open standard, uses UDP, and <strong>combines</strong> Authentication and Authorization. It only encrypts the password.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        id: "5.9",
+                        title: "5.9 Describe wireless security protocols",
+                        summary: "WPA, WPA2, and WPA3",
+                        content: `
+                            <p>In the world of networking, securing the "airwaves" is critical because wireless signals can travel through walls and be intercepted by anyone nearby.<br>Wireless security protocols provide **encryption** (to keep data private) and **authentication** (to ensure only authorized users connect).</p>
+                            
+                            <h3><strong>1. WPA (Wi-Fi Protected Access)</strong></h3>
+                            <p>WPA was introduced in 2003 as a temporary fix for the severe vulnerabilities found in the original WEP (Wired Equivalent Privacy) protocol.</p>
+                            <ul>
+                                <li><strong>Encryption:</strong> It used <strong>TKIP</strong> (Temporal Key Integrity Protocol), which dynamically changed keys.</li>
+                                <li><strong>Weakness</strong> While better than WEP, TKIP was still mathematically vulnerable to certain attacks.</li>
+                                <li><strong>Status</strong> Obsolete. You should not use WPA in modern networks.</li>
+                            </ul>
+                            
+                            <h3><strong>2. WPA2 (Wi-Fi Protected Access 2)</strong></h3>
+                            <p>Introduced in 2004, WPA2 became the industry standard for over a decade and is still widely used today. It is a core topic for the CCNA exam.</p>
+                            <ul>
+                                <li><strong>Encryption:</strong> Uses <strong>AES</strong> (Advanced Encryption Standard), which is much stronger than TKIP.</li>
+                                <li><strong>Mechanism</strong> It uses <strong>CCMP</strong> (Counter Mode with Cipher Block Chaining Message Authentication Code Protocol).</li>
+                                <li><strong>Authentication Modes:</strong></li>
+                                <li>- <strong>WPA2-Personal (PSK):</strong> Uses a Pre-Shared Key (a single password).</li>
+                                <li>- <strong>WPA2-Enterprise (802.1X):</strong> Uses a RADIUS server for individual user credentials (username/password or certificates).</li>
+                                <li><strong>Weakness:</strong> Vulnerable to the <strong>KRACK</strong> (Key Reinstallation Attack) and offline dictionary attacks if a weak password is used.</li>
+                            </ul>
+                            
+                            <h3><strong>3. WPA3 (Wi-Fi Protected Access 3)</strong></h3>
+                            <p>Released in 2018, WPA3 is the modern standard designed to address the weaknesses of WPA2.</p>
+                            <ul>
+                                <li><strong>SAE (Simultaneous Authentication of Equals):</strong> This replaces the PSK (Pre-Shared Key) exchange. It prevents "offline dictionary attacks" where a hacker captures the handshake and tries millions of passwords at home.</li>
+                                <li><strong>Forward Secrecy</strong> Even if a hacker discovers the password later, they cannot decrypt data that was captured in the past.</li>
+                                <li><strong>Management Frame Protection (MFP):</strong> Required by default. This prevents attackers from "de-authenticating" users from the network.</li>
+                                <li><strong>192-bit Encryption:</strong> Available in WPA3-Enterprise for high-security environments.</li>
+                            </ul>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Comparison Table</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>WPA</th>
+                                        <th>WPA2</th>
+                                        <th>WPA3</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Encryption</strong></td>
+                                        <td>TKIP</td>
+                                        <td>AES / CCMP</td>
+                                        <td>AES / GCMP-256</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Key Exchange</strong></td>
+                                        <td>4-Way Handshake</td>
+                                        <td>4-Way Handshake</td>
+                                        <td>SAE (Dragonfly)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Security Level</strong></td>
+                                        <td>Low (Legacy)</td>
+                                        <td>Medium</td>
+                                        <td>High</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Brute Force Protection</strong></td>
+                                        <td>No</td>
+                                        <td>No</td>
+                                        <td>Yes</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h3><strong>Configuration Example (Cisco IOS-XE)</strong></h3>
+                            <p>When configuring a wireless network on a Cisco device (like an Integrated Services Router or a Wireless LAN Controller), you specify the security parameters.<br>Here is how you might define a basic WPA2-PSK SSID on a modern Cisco interface:</p>
+                            <pre># Enter global configuration mode\nRouter# <code>aaa new-model</code>\n\n# Define the wireless profile\nRouter(config)# <code>wlan MySecureNetwork 1 MySecureNetwork</code>\n\n# Enable the WLAN\nRouter(config-if)# <code> no shutdown</code>\n\n# Configure WPA2 Security\nRouter(config)# <code>security wpa</code>\nRouter(config-wpa)# <code>wpa2</code>\nRouter(config-wpa)# <code>wpa2 ciphers aes</code>\n\n# Set the Pre-Shared Key (Password)\nRouter(config)# <code>security wpa akm psk set-key ascii MyStrongPassword123</code></pre>  
+                            
+                            <h3><strong>Tutor's Pro-Tip for the CCNA:</strong></h3>
+                            <p>On the exam, remember that <strong>WPA2 uses AES/CCMP</strong>, while <strong>WPA3 uses SAE</strong>. If you see a question about preventing "De-authentication attacks," think <strong>WPA3</strong> because it mandates Protected Management Frames!</p>
+                        `
+                    },
+                    {
+                        id: "5.10",
+                        title: "5.10 Management & Control Plane Security (CoPP)",
+                        summary: "VTY Access-Classes, Control Plane Policing Rate-Limiting",
+                        content: `
+                            <p><strong>CoPP (Control Plane Policing):</strong> Protects CPU from DoS packet floods by applying MQC rate-limiting policies to the control-plane interface.</p>
+                        `
+                    },
+                    {
+                        id: "5.11",
+                        title: "5.11 General",
                         summary: "VTY Access-Classes, Control Plane Policing Rate-Limiting",
                         content: `
                             <p><strong>CoPP (Control Plane Policing):</strong> Protects CPU from DoS packet floods by applying MQC rate-limiting policies to the control-plane interface.</p>
