@@ -2551,10 +2551,62 @@
                     },
                     {
                         id: "4.6",
-                        title: "4.6 DHCP Relay (IP Helper-Address)",
-                        summary: "Forwarding UDP Broadcasts across Subnets",
+                        title: "4.6 Configure and verify DHCP client and relay",
+                        summary: "Forwarding UDP Broadcasts across Subnets (Helper Address)",
                         content: `
-                            <pre><code>Router(config-if)# ip helper-address 10.1.1.50</code></pre>
+                            <p>In a typical network, you won't always have a DHCP server on every single subnet.<br>This is where the <strong>DHCP Client</strong> and <strong>DHCP Relay</strong> (Helper Address) concepts become vital.</p>
+                            
+                            <h3><strong>1. Configuring a Router as a DHCP Client</strong>:</h3>
+                            <p>Sometimes, a router needs to receive its IP address from an ISP or a central management router. Instead of assigning a static IP, we tell the interface to listen for DHCP offers.</p>                            
+                            <h3><strong>Configuration Syntax:</strong>:</h3>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/0</code>\n\Router(config-if)# <code>ip address dhcp</code>\nRouter(config-if)# <code>no shutdown</code>\nRouter(config-if)# <code>exit</code></pre>
+                            
+                            <h3><strong>What happens here?</strong>:</h3>
+                            <p>The router sends out a DHCP Discovery packet. Once it receives an offer, it will automatically configure its IP, subnet mask, default gateway, and DNS settings.</p>
+                            
+                            <h3><strong>2. Configuring DHCP Relay (The IP Helper Address)</strong>:</h3>
+                            <p>By default, routers <strong>do not</strong> forward broadcasts. Since a DHCP Discovery is a broadcast, it won't reach a server located on a different subnet.<br>The <strong>DHCP Relay Agent</strong> solves this by converting that broadcast into a unicast packet directed at the server.</p>
+                            <h3><strong>Scenario:</strong>:</h3>
+                            <p><strong>Client</strong> is on 'GigabitEthernet0/0' (Subnet 192.168.10.0/24).<br><strong>DHCP Server</strong> is at '10.1.1.50' (on a different network).</p>                          
+                            <h3><strong>Configuration Syntax:</strong>:</h3>
+                            <p>You must apply the configuration on the interface <strong>closest to the client</strong> (the gateway).</p>                          
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/0</code>\n\Router(config-if)# <code>ip helper-address 10.1.1.50</code>\nRouter(config-if)# <code>exit</code></pre>
+                            <p><strong>Pro Tip:</strong> You can configure multiple 'ip helper-address' commands if you have redundant DHCP servers!</p>
+                         
+                            <h3><strong>3. Verification Commands</strong>:</h3>
+                            <p>Once configured, you need to ensure the lease was successful. Use these commands to verify the state of your interfaces and the relay process.</p>
+                            <p>To verify the DHCP Client:</p>
+                            <pre># Check if the interface received an IP via DHCP\nRouter# <code>show ip interface brief</code>\n\n# See detailed DHCP lease information (lease time, renewal time, etc.)\nRouter# <code>show dhcp lease</code></pre>
+                            <p>To verify the DHCP Relay:</p>
+                            <pre># Check if the helper address is active on the interface\nRouter# <code>show ip interface GigabitEthernet0/0</code>\n\n* Look for the line that says: "Helper address is 10.1.1.50"</pre>
+                            <h3><strong>For Real-time Troubleshooting:</strong>:</h3>
+                            <p>If clients aren't getting addresses, use these debug commands (use with caution in production!):</p>
+                            <pre>Router# <code>debug ip dhcp server events</code>\nRouter# <code>debug ip packet</code></pre>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Role</th>
+                                        <th>Primary Command</th>
+                                        <th>Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>DHCP Client</strong></td>
+                                        <td><code>ip address dhcp</code></td>
+                                        <td>On the interface receiving the IP.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>DHCP Relay</strong></td>
+                                        <td><code>ip helper-address [Server_IP]</code></td>
+                                        <td>On the interface receiving the client broadcast.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         `
                     },
                     {
