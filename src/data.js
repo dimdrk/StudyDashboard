@@ -2569,8 +2569,8 @@
                             <h3><strong>Scenario:</strong>:</h3>
                             <p><strong>Client</strong> is on 'GigabitEthernet0/0' (Subnet 192.168.10.0/24).<br><strong>DHCP Server</strong> is at '10.1.1.50' (on a different network).</p>                          
                             <h3><strong>Configuration Syntax:</strong>:</h3>
-                            <p>You must apply the configuration on the interface <strong>closest to the client</strong> (the gateway).</p>                          
-                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/0</code>\n\Router(config-if)# <code>ip helper-address 10.1.1.50</code>\nRouter(config-if)# <code>exit</code></pre>
+                            <p>You must apply the configuration on the interface <strong>closest to the client</strong> (the gateway).</p>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/0</code>\nRouter(config-if)# <code>ip helper-address 10.1.1.50</code>\nRouter(config-if)# <code>exit</code></pre>
                             <p><strong>Pro Tip:</strong> You can configure multiple 'ip helper-address' commands if you have redundant DHCP servers!</p>
                          
                             <h3><strong>3. Verification Commands</strong>:</h3>
@@ -2611,19 +2611,136 @@
                     },
                     {
                         id: "4.7",
-                        title: "4.7 Quality of Service (QoS) Principles",
-                        summary: "Classification, Marking (CoS/DSCP), Policing vs Shaping, LLQ",
+                        title: "4.7 Explain the forwarding per-hop behavior (PHB) for QoS",
+                        summary: "classification, marking, queuing, congestion, policing, shaping",
                         content: `
-                            <p><strong>Policing:</strong> Drops excess traffic (Ingress).</p>
-                            <p><strong>Shaping:</strong> Buffers excess traffic (Egress).</p>
+                            <p>In the world of networking, <strong>Per-Hop Behavior (PHB)</strong> describes how an individual router or switch treats a packet as it traverses that specific "hop."<br>Think of QoS as a VIP service at an airport: some passengers (packets) get to skip the line, while others have to wait.</>
+                            
+                            <h3><strong>1. Classification</strong>:</h3>
+                            <p>Before we can treat a packet differently, we must identify it. Classification is the process of inspecting a packet and assigning it to a "class" based on specific criteria.</p>
+                            <p><strong>Methods:</strong> Access Control Lists (ACLs), incoming interface, or **NBAR** (Network Based Application Recognition) which looks deep into Layer 7 protocols.</p>
+                            
+                            <h3><strong>2. Marking</strong>:</h3>
+                            <p>Once classified, we "color" the packet so subsequent routers don't have to re-classify it.</p>
+                            <ul>
+                                <li><strong>Layer 2 (Ethernet):</strong> Uses the <strong>Class of Service (CoS)</strong> bits inside the 802.1Q header (3 bits).</li>
+                                <li><strong>Layer 3 (IP):</strong> Uses the <strong>Differentiated Services Code Point (DSCP)</strong> inside the Type of Service (ToS) byte (6 bits).</li>
+                            </ul>
+                            
+                            <h3><strong>Common DSCP Values to Remember:</strong>:</h3>
+                            <ul>
+                                <li><strong>EF (Expedited Forwarding):</strong> Reserved for Voice (low latency).</li>
+                                <li><strong>AF (Assured Forwarding):</strong> High-priority data.</li>
+                                <li><strong>BE (Best Effort):</strong> Standard internet traffic.</li>
+                            </ul>
+                            
+                            <h3><strong>3. Policing and Shaping (Traffic Conditioning)</strong>:</h3>
+                            <p>These mechanisms control the "rate" of traffic to prevent congestion.</p>
+                            <ul>
+                                <li><strong>Policing:</strong> If the traffic exceeds a set rate, the excess is dropped immediately or re-marked. It causes "micro-bursts" and is usually applied to <strong>ingress</strong> (inbound) traffic.</li>
+                                <li><strong>Shaping:</strong> If traffic exceeds the rate, it is buffered (held in memory) and sent later. This "smooths" the traffic flow and is applied to <strong>egress</strong> (outbound) traffic.</li>
+                            </ul>
+                            
+                            <h3><strong>4. Queuing (Congestion Management)</strong>:</h3>
+                            <p>When an interface is congested, packets are stored in buffers (queues). PHB dictates which queue gets emptied first.</p>
+                            <ul>
+                                <li><strong>CBWFQ (Class-Based Weighted Fair Queuing):</strong> Guarantees bandwidth to different classes.</li>
+                                <li><strong>LLQ (Low Latency Queuing):</strong> This is CBWFQ plus a <strong>Strict Priority Queue</strong>. This is vital for Voice over IP (VoIP), as voice packets are sent before anything else.</li>
+                            </ul>
+                            
+                            <h3><strong>5. Congestion Avoidance</strong>:</h3>
+                            <p>What happens when the buffers get full? If we wait until they are 100% full, the router performs a "Tail Drop," which can cause TCP synchronization issues.</p>
+                            <ul>
+                                <li><strong>WRED (Weighted Random Early Detection):</strong> The router begins dropping lower-priority packets *randomly* before the queue is full. This signals the sending devices to slow down their transmission rate.</li>
+                            </ul>hing else.</li>
+                            </ul>
+                            
+                            <h3><strong>Configuration Example (Cisco MQC)</strong>:</h3>
+                            <p>In Cisco IOS, we use the <strong>Modular QoS CLI (MQC)</strong> to implement these behaviors. Here is a standard configuration for prioritizing Voice traffic:</p>
+                            <pre># Step 1: Classify the traffic\nRouter(config)# <code>class-map match-any VOICE-CLASS</code>\nRouter(config-cmap)# <code>match dscp ef</code>\nRouter(config-cmap)# <code>match protocol rtp</code>\nRouter(config-cmap)# <code>exit</code>\n\n# Step 2: Define the Policy (PHB)\nRouter(config)# <code>policy-map QOS-POLICY</code>\nRouter(config-pmap)# <code>class VOICE-CLASS</code>\nRouter(config-pmap-c)# <code>priority 128</code>  # LLQ: Strict priority with 128kbps guaranteed\nRouter(config-pmap-c)# <code>class class-default</code>\nRouter(config-pmap-c)# <code>fair-queue</code>     # All other traffic gets fair treatment\nRouter(config-pmap-c)# <code>exit</code>\nRouter(config)# <code>exit</code>\n\n# Step 3: Apply to the interface\nRouter(config)# <code>interface GigabitEthernet0/1</code>\nRouter(config-if)# <code>service-policy output QOS-POLICY</code></pre>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table for your CCNA Review:</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Mechanism</th>
+                                        <th>Purpose</th>
+                                        <th>Analogy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Classification</strong></td>
+                                        <td>Identify traffic</td>
+                                        <td>Sorting mail by type</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Marking</strong></td>
+                                        <td>Label the packet</td>
+                                        <td>Sticking a "Priority" stamp on it</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Policing</strong></td>
+                                        <td>Hard limit (Drop)</td>
+                                        <td>Security guard stopping people at the door</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Shaping</strong></td>
+                                        <td>Soft limit (Delay)</td>
+                                        <td>A waiting room for passengers</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Queuing</strong></td>
+                                        <td>Scheduling</td>
+                                        <td>Deciding which lane moves first at a toll</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>WRED</strong></td>
+                                        <td>Prevent congestion</td>
+                                        <td>Asking people to slow down before the road gets blocked</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         `
                     },
                     {
                         id: "4.8",
-                        title: "4.8 Wireless Roaming & Architecture Details",
-                        summary: "Layer 2 vs Layer 3 Roaming, Mobility Groups, Anchor WLCs",
+                        title: "4.8 Configure network devices for remote access using SSH",
+                        summary: "SSH on a Cisco router or switch",
                         content: `
-                            <p><strong>L3 Roaming:</strong> Uses CAPWAP Mobility Tunnels between Anchor WLC and Foreign WLC so clients keep their original IP address while roaming across subnets.</p>
+                            <p>To get SSH up and running on a Cisco router or switch, we follow a specific sequence of steps.</p>
+                            <h3><strong>Prerequisites</strong>:</h3>
+                            <p>Before we can generate encryption keys, the device needs a unique identity.</p>
+                            <ul>
+                                <li><strong>Set a Hostname:</strong>The default "Router" or "Switch" won't work for key generation.</li>
+                                <li><strong>Set an IP Domain Name:</strong>This combines with the hostname to form the Fully Qualified Domain Name (FQDN) used for the certificate.</li>
+                            </ul>
+                            <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>hostname R1</code>\nR1(config)# <code>ip domain-name cisco.com</code></pre>
+
+                            <h3><strong>Step 1: Generate the RSA Key Pair</strong>:</h3>
+                            <p>This is the "secret sauce" that allows for encryption. I recommend using at least **1024 bits** for security; 2048 is even better.</p>
+                            <pre>R1(config)# <code>crypto key generate rsa</code>\n# The system will ask: How many bits in the modulus [512]:\n# Type <code>1024</code> and press Enter.</pre>
+                            
+                            <h3><strong>Step 2: Configure Local Authentication</strong>:</h3>
+                            <p>We need a local user database so the device knows who is allowed to log in. Always use 'secret' instead of 'password' for better hashing.</p>
+                            <pre>R1(config)# <code>username admin privilege 15 secret C1sc0123!</code>\n\n* Note: Privilege 15 drops the user directly into privileged EXEC mode.</pre>
+                            
+                            <h3><strong>Step 3: Configure the Virtual Terminal (VTY) Lines</strong>:</h3>
+                            <p>Now we tell the router to use the local database and only allow SSH (disabling Telnet).</p>
+                            <pre>R1(config)# <code>line vty 0 4</code>\nR1(config-line)# <code>login local</code>\nR1(config-line)# <code>transport input ssh</code>\nR1(config-line)# <code>exit</code></pre>
+                            
+                            <h3><strong>Step 4: Force SSH Version 2 (Recommended)</strong>:</h3>
+                            <p>By default, the device might support Version 1, which has known vulnerabilities. Let's force Version 2 for maximum security.</p>
+                            <pre>R1(config)# <code>ip ssh version 2</code></pre>
+                            
+                            <h3><strong>Step 5: Verification</strong>:</h3>
+                            <p>You want to make sure everything is running correctly. Use these commands to check your work:</p>
+                            <pre># Check if SSH is enabled and which version is running\nR1# <code>show ip ssh</code>\n\n# Check the status of current SSH connections\nR1# <code>show ssh</code></pre>
+                            
+                            <h3><strong>Pro-Tip for the CCNA Exam</strong>:</h3>
+                            <p>If you try to generate the RSA keys and get an error, double-check that you have configured both a <strong>hostname</strong> and an <strong>ip domain-name</strong>. The device uses the combination (e.g., 'R1.cisco.com') as the label for the key!</p>
                         `
                     },
                     {
