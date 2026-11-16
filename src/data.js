@@ -2877,7 +2877,7 @@
                             <p>This happens when a client moves between APs connected to <strong>different WLCs</strong>.</p>
                             <ul>
                                 <li><strong>Inter-Controller L2 Roaming:</strong> If both WLCs share the same VLAN for that WLAN, the client keeps its IP.</li>
-                                <li><strong>Inter-Controller L3 Roaming:</strong>If the new WLC does <strong>not</strong> have access to the original VLAN, we use a <strong>Mobility Tunnel</strong>.</li>
+                                <li><strong>Inter-Controller L3 Roaming:</strong> If the new WLC does <strong>not</strong> have access to the original VLAN, we use a <strong>Mobility Tunnel</strong>.</li>
                                 <li>- <strong>Anchor Controller:</strong> The original WLC where the client first connected.</li>
                                 <li>- <strong>Foreign Controller:</strong> The new WLC where the client is currently located.</li>
                                 <li>- Traffic is tunneled from the Foreign WLC back to the Anchor WLC so the client can keep its original IP address!</li>
@@ -2941,10 +2941,81 @@
                 topics: [
                     {
                         id: "5.1",
-                        title: "5.1 Key Security Concepts & Hardening",
-                        summary: "Threats, Vulnerabilities, Exploits, Defense-in-Depth",
+                        title: "5.1 Define key security concepts",
+                        summary: "threats, vulnerabilities, exploits, and mitigation techniques",
                         content: `
-                            <p><strong>Threat:</strong> Danger to asset. <strong>Vulnerability:</strong> Flaw/Hole. <strong>Exploit:</strong> Act of taking advantage of flaw.</p>
+                            <h3><strong>1. Threats</strong></h3>
+                            <p>A <strong>threat</strong> is any potential danger to an asset. It is the "who" or "what" that could cause harm.<br>Threats can be intentional (a hacker) or accidental (an employee spilling coffee on a core switch).</p>
+                            <ul>
+                                <li><strong>Internal Threats:</strong> Employees, contractors, or partners who have authorized access but misuse it (maliciously or accidentally).</li>
+                                <li><strong>External Threats:</strong> Hackers, state-sponsored actors, or even natural disasters like floods and fires.</li>
+                            </ul>
+
+                            <h3><strong>2. Vulnerabilities</strong></h3>
+                            <p>A <strong>vulnerability</strong> is a weakness in a system, procedure, or design that makes an exploit possible. It is a "hole" in your defenses.</p>
+                            <ul>
+                                <li><strong>Examples:</strong></li>
+                                <li>- Unpatched software or operating systems.</li>
+                                <li>- Weak or default passwords (e.g., using 'admin/admin').</li>
+                                <li>- Lack of physical security (an unlocked server room).</li>
+                                <li>- Human error (falling for a phishing email).</li>
+                            </ul>
+
+                            <h3><strong>3. Exploits</strong></h3>
+                            <p>A <strong>exploit</strong> is the actual mechanism, software, or technique used to take advantage of a vulnerability.<br>If a vulnerability is a "hole in the fence," the exploit is the "act of climbing through it."</p>
+                            <ul>
+                                <li><strong>Common Exploits:</strong></li>
+                                <li>- <strong>SQL Injection:</strong> Exploiting poorly coded web forms to steal database data.</li>
+                                <li>- <strong>Buffer Overflow:</strong> Sending more data than a memory buffer can handle to crash a system or run malicious code.</li>
+                                <li>- <strong>Zero-day Exploit:</strong> An attack that occurs on the same day a vulnerability is discovered, before a patch is available.</li>
+                            </ul>
+
+                            <h3><strong>4. Mitigation Techniques</strong></h3>
+                            <p><strong>Mitigation</strong> involves the steps we take to reduce the severity, impact, or likelihood of a threat.<br>In networking, we use a "Defense in Depth" strategy—layering multiple security controls so that if one fails, others are there to protect the network.</p>
+                            <ul>
+                                <li><strong>Technical Mitigations:</strong> Firewalls, IPS (Intrusion Prevention Systems), Access Control Lists (ACLs), and Encryption (VPNs).</li>
+                                <li><strong>Administrative Mitigations:</strong> Security policies, user training, and "Least Privilege" access levels.</li>
+                                <li><strong>Physical Mitigations:</strong> Badge readers, locks, and security cameras.</li>
+                            </ul>
+
+                            <h3><strong>CCNA Example: Mitigating Unauthorized Access</strong></h3>
+                            <p>As a CCNA student, one of the first mitigation techniques you learn is securing the management plane of a router.<br>If you leave your VTY (Telnet/SSH) lines unprotected, that is a **vulnerability**. A hacker attempting a brute-force password attack is the <strong>threat</strong>.<br>Here is how we mitigate that by enforcing SSH and using local authentication:</p>
+                            <pre># Enter global configuration mode\nRouter# <code>configure terminal</code>\n\n# Create a local user with a secret password\nRouter(config)# <code>username Admin1 privilege 15 secret Cisc0_Secure_Pa$$</code>\n\n# Define the domain name (required for SSH)\nRouter(config)# <code>ip domain-name lab.local</code>\n\n# Generate RSA keys for encryption\nRouter(config)# <code>crypto key generate rsa</code>\n\n# Choose 1024 or 2048 bits for better security\n\n# Configure the virtual lines (VTY)\nRouter(config)# <code>line vty 0 4</code>\n\n# Tell the router to check the local database for users\nRouter(config-line)# <code>login local</code>\n\n# Only allow SSH, disable insecure Telnet\nRouter(config-line)# <code>transport input ssh</code>\nRouter(config-line)# <code>exit</code></pre>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Table for Quick Review</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Term</th>
+                                        <th>Simple Definition</th>
+                                        <th>Analogy Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Threat</strong></td>
+                                        <td>A potential danger</td>
+                                        <td>A burglar</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Vulnerability</strong></td>
+                                        <td>A weakness in the system</td>
+                                        <td>An unlocked window</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Exploit</strong></td>
+                                        <td>The act of using the weakness</td>
+                                        <td>Climbing through the window</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Mitigation</strong></td>
+                                        <td>Reducing the risk</td>
+                                        <td>Installing a window lock and alarm</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         `
                     },
                     {
