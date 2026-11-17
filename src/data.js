@@ -58,7 +58,7 @@
                             </ul>
 
                             <h3><strong>8. Power over Ethernet (PoE)</strong></h3>
-                            <p>PoE is a technology that allows a switch to send both **data and electrical power** over a single copper Ethernet cable.</p>
+                            <p>PoE is a technology that allows a switch to send both <strong>data and electrical power</strong> over a single copper Ethernet cable.</p>
                              <ul>
                                 <li><strong>Why it matters:</strong> It powers devices like IP Phones, Cameras, and Access Points without needing a separate power outlet.</li>
                                 <li><strong>Standard Example:</strong> 802.3at (PoE+) provides up to 30W of power.</li>
@@ -138,7 +138,7 @@
                             <p>A WAN connects Local Area Networks (LANs) over long geographical distances.</p>
                              <ul>
                                 <li><strong>Characteristics:</strong> Uses leased lines, MPLS, or the Internet (via SD-WAN or VPNs).</li>
-                                <li><strong>Focus:</strong>High availability and cost management. Modern CCNA focuses heavily on **SD-WAN**, which uses a centralized controller to manage traffic across multiple WAN links.</li>
+                                <li><strong>Focus:</strong>High availability and cost management. Modern CCNA focuses heavily on <strong>SD-WAN</strong>, which uses a centralized controller to manage traffic across multiple WAN links.</li>
                             </ul>
 
                             <h3><strong>5. SOHO (Small Office/Home Office)</strong></h3>
@@ -152,12 +152,12 @@
                             <h3><strong>6. On-premises vs. Cloud</strong></h3>
                             <p>This describes <strong>where</strong> your resources and management live.</p>
                              <ul>
-                                <li><strong>On-premises:</strong> Your servers, switches, and firewalls are physically located in your building. You have total control, but you are responsible for power, cooling, and hardware maintenance (**CapEx** - Capital Expenditure).</li>
+                                <li><strong>On-premises:</strong> Your servers, switches, and firewalls are physically located in your building. You have total control, but you are responsible for power, cooling, and hardware maintenance (<strong>CapEx</strong> - Capital Expenditure).</li>
                                 <li><strong>Cloud:</strong> Resources are hosted by a provider (AWS, Azure, Google Cloud). You access them over the Internet or a private connection.
                                     <ul>
                                         <li><strong><q>Public Cloud</q>:</strong> Shared infrastructure.</li>
                                         <li><strong><q>Private Cloud</q>:</strong> Dedicated infrastructure for one organization.</li>
-                                        <li><strong><q>Hybrid</q>:</strong> A mix of On-premises and Cloud (**OpEx** - Operating Expenditure).</li>
+                                        <li><strong><q>Hybrid</q>:</strong> A mix of On-premises and Cloud (<strong>OpEx</strong> - Operating Expenditure).</li>
                                     </ul>
                                 </li>
                             </ul>
@@ -290,7 +290,7 @@
                                 <li><strong>Duplex:</strong> Full-duplex (you can send and receive simultaneously). Each device gets the full bandwidth of the link. A 1 Gbps switch port provides 1 Gbps to the connected device.</li>
                                 <li><strong>Efficiency:</strong> Much higher throughput because there are no collisions. Dedicated bandwidth. No sharing with other devices.</li>
                             </ul>
-                            <h3><strong>CCNA Configuration Tip</strong></h3>
+                            <h3><strong>CCNA Configuration Tip 💡</strong></h3>
                             <p>When you are troubleshooting physical interfaces on a Cisco router or switch, your best friend is the <q>show interface</q> command. You can check if the media is running at Full-Duplex and see the speed.</p>
                             <pre># Check the status and statistics of a specific interface\nRouter# <code>show interfaces GigabitEthernet 0/1</code>\n\n# Look for these key lines in the output:\n# <code>GigabitEthernet0/1 is up, line protocol is up</code>\n# <code>Full-duplex, 1000Mb/s, media type is RJ45</code></pre>
                             <p>When configuring interfaces on a switch or router, you can specify the speed and duplex settings. For example:</p>
@@ -396,7 +396,7 @@
                                 </tbody>
                             </table>
 
-                            <p><strong>Pro Tip:</strong> Always start your troubleshooting with <code>show interfaces</code>. It will tell you the status, speed, duplex, and error counters for the interface in question. From there, you can determine if it's a physical layer issue (cabling, SFP) or a configuration issue (speed/duplex mismatch).</p>
+                            <p><strong>Pro Tip: 💡</strong> Always start your troubleshooting with <code>show interfaces</code>. It will tell you the status, speed, duplex, and error counters for the interface in question. From there, you can determine if it's a physical layer issue (cabling, SFP) or a configuration issue (speed/duplex mismatch).</p>
                             <p>If you see errors incrementing, clear the counters first to see if the problem is still happening in real-time:</p>
                             <pre>Switch# <code>clear counters gigabitEthernet 0/1</code></pre>
                         `
@@ -522,7 +522,7 @@
                             <p>Once configured, you must verify that the interfaces are functional and the logic is correct.</p>
                             <pre># Check Interface Status:\nThis command shows if the interface is "up/up."\nRouter# <code>show ip interface brief</code>\n\nCheck the Routing Table:\nThis confirms that the router sees the subnets as "Directly Connected."\nRouter# <code>show ip route</code>\n\nVerify Detailed Interface Info:\nUse this to double-check the subnet mask specifically.\nRouter# <code>show ip interface GigabitEthernet0/0</code>\n\nTest Connectivity:\nFinally, ensure the router can reach a device (e.g., a PC at 192.168.10.10).\nRouter# <code>ping 192.168.10.10</code></pre>
 
-                            <h3><strong>Quick Pro-Tip for the CCNA Exam:</strong></h3>
+                            <h3><strong>Quick Pro-Tip for the CCNA Exam: 💡</strong></h3>
                             <p>Always remember the <strong>"Magic Number"</strong> rule for subnetting! </p>
                             <ol>
                                 <li>Subtract the interesting octet of the mask from 256. </li>
@@ -576,7 +576,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <p><strong>Bonus Tip:</strong> Remember that the Class B private range is 172.16.0.0 to 172.31.255.255.</p>
+                            <p><strong>Bonus Tip: 💡</strong> Remember that the Class B private range is 172.16.0.0 to 172.31.255.255.</p>
 
                             <h3><strong>Key Characteristics</strong></h3>
                             <ul>
@@ -602,7 +602,7 @@
                             <p>Assigning a private IP address to a router interface is one of the first things you'll do in the lab.<br>Here is how you configure a Class C private address on a GigabitEthernet interface:</p>
                             <pre>Router> <code>enable</code>\nRouter# <code>configure terminal</code>\nRouter(config)# <code>interface gigabitEthernet 0/0</code>\nRouter(config-if)# <code>ip address 192.168.1.1 255.255.255.0</code>\nRouter(config-if)# <code>no shutdown</code>\nRouter(config-if)# <code>exit</code>\nRouter(config)# <code>exit</code>\nRouter# <code>show ip interface brief</code></pre>
 
-                            <p><strong>Pro-Tip for the Exam:</strong> Remember that the Class B range is specifically <q>172.16.0.0</q> through <q>172.31.255.255</q>.<br>Beginners often mistakenly think it goes all the way to <q>172.255.255.255</q>, but that is incorrect!</p>
+                            <p><strong>Pro-Tip for the Exam: 💡</strong> Remember that the Class B range is specifically <q>172.16.0.0</q> through <q>172.31.255.255</q>.<br>Beginners often mistakenly think it goes all the way to <q>172.255.255.255</q>, but that is incorrect!</p>
                         `
                     },
                     {
@@ -623,7 +623,7 @@
                             <p>Here is how you would configure both a GUA and a LLA on GigabitEthernet 0/0/0:</p>
                             <pre>Router(config)# <code>interface GigabitEthernet0/0/0</code>\nRouter(config-if)# <code>ipv6 address 2001:db8:acad:1::1/64</code>\nRouter(config-if)# <code>ipv6 address fe80::1 link-local</code>\nRouter(config-if)# <code>no shutdown</code>\nRouter(config-if)# <code>exit</code></pre>
 
-                            <p><strong>Pro Tip:</strong> While the router can auto-generate a Link-Local address based on the EUI-64 process, manually setting it to something simple like <code><strong>fe80::1</strong></code> makes troubleshooting and documenting your network much easier!</p>
+                            <p><strong>Pro Tip: 💡</strong> While the router can auto-generate a Link-Local address based on the EUI-64 process, manually setting it to something simple like <code><strong>fe80::1</strong></code> makes troubleshooting and documenting your network much easier!</p>
 
                             <h3><strong>3. Verify IPv6 Configuration</strong></h3>
                             <p>After configuring IPv6 addresses, you should verify that they are correctly applied and that the interface is operational.</p>
@@ -635,7 +635,7 @@
                             <pre>Router# <code>show ipv6 interface GigabitEthernet0/0/0</code></pre>
                             <h3><strong>Verify the IPv6 Routing Table</strong></h3>
                             <p>To ensure the prefix is in the routing table and the router knows where to send traffic:</p>
-                            <pre>Router# <code>show ipv6 route</code>\n\n*Look for codes like **C** (Connected) and **L** (Local) to verify your direct networks.*</pre>
+                            <pre>Router# <code>show ipv6 route</code>\n\n*Look for codes like <strong>C</strong> (Connected) and <strong>L</strong> (Local) to verify your direct networks.*</pre>
                             <h3><strong>Testing Connectivity</strong></h3>
                             <p>Finally, test the reachability of a neighbor or the gateway:</p>
                             <pre>Router# <code>ping ipv6 2001:db8:acad:1::2</code></pre>
@@ -656,7 +656,7 @@
                             <p>IPv6 addresses are 128 bits long and are represented in hexadecimal notation. They are divided into different types based on their purpose and scope.<br>There is <strong>no broadcast in IPv6</strong> it has been replaced by more efficient multicast and anycast methods.<br>Understanding these types is crucial for network design and troubleshooting.</p>
 
                             <h3><strong>1. Unicast Addresses</strong></h3>
-                            <p>Unicast identifies a **single interface**. A packet sent to a unicast address is delivered to that specific interface. There are three main types:</p>
+                            <p>Unicast identifies a <strong>single interface</strong>. A packet sent to a unicast address is delivered to that specific interface. There are three main types:</p>
                             <ul>
                                 <li><strong>Global Unicast (GUA):</strong> These are globally routable on the internet (like IPv4 public IPs). They currently use the prefix <code>2000::/3</code> (Routable public IP)</li>
                                 <li><strong>Link-Local (LLA):</strong>These are used for communication within a single local link (subnet). They are not routable. Every IPv6-enabled interface must have one. They use the prefix <code>fe80::/10</code> (Mandatory per interface).</li>
@@ -677,7 +677,7 @@
                             <p>Anycast is a "one-to-nearest" delivery method. Multiple devices (usually servers or routers) are assigned the <strong>exact same IPv6 address</strong>.<br>When a packet is sent to an anycast address, the routing infrastructure delivers it to the interface that is "closest" based on the routing protocol's metric. There is no special prefix for Anycast; you simply configure a Unicast address and tell the router it is an Anycast address.</p>
                             
                             <h3><strong>4. Modified EUI-64</strong></h3>
-                            <p>Modified EUI-64 is a process used to automatically create a 64-bit **Interface ID** (the host portion) using the device's 48-bit MAC address.</p>
+                            <p>Modified EUI-64 is a process used to automatically create a 64-bit <strong>Interface ID</strong> (the host portion) using the device's 48-bit MAC address.</p>
                             <h3><strong>The Process:</strong></h3>
                             <ol>
                                 <li>Take the 48-bit MAC address.</li>
@@ -699,7 +699,7 @@
                             <pre>Router(config)# <code>ipv6 unicast-routing</code></pre>
                             <p>To configure a Global Unicast Address manually:</p>
                             <pre>Router(config)# <code>ipv6 address 2001:db8:acad:1::1/64</code></pre>
-                            <p>To configure an address using the **Modified EUI-64** process:</p>
+                            <p>To configure an address using the <strong>Modified EUI-64</strong> process:</p>
                             <pre>Router(config)# <code>ipv6 address 2001:db8:acad:1::1/64 eui-64</code></pre>
                             <p>To verify your IPv6 interfaces:</p>
                             <pre>Router(config)# <code>show ipv6 interface brief</code></pre>
@@ -727,7 +727,7 @@
                             </ul>
 
                             <h3><strong>2. Linux (CLI)</strong></h3>
-                            <p>Modern Linux distributions (Ubuntu, CentOS, Debian) primarily use the <code>ip</code> command from the **iproute2** package, though older systems might still use <code>ifconfig</code>.</p>
+                            <p>Modern Linux distributions (Ubuntu, CentOS, Debian) primarily use the <code>ip</code> command from the <strong>iproute2</strong> package, though older systems might still use <code>ifconfig</code>.</p>
 
                             <p><strong>To check IP address and Subnet Mask:</strong></p>
                             <pre>$ <code>ip addr show</code>\n\nNote: Look for the <code>inet</code> line under your interface, such as <code>eth0</code> or <code>enp0s3</code>.</pre>
@@ -762,7 +762,7 @@
                                     <tr><td>MAC Address</td><td><code>ipconfig /all</code></td><td><code>ip link</code> / <code>ifconfig</code></td></tr>
                                 </tbody>
                             </table>
-                            <h3><strong>Pro-Tip for the CCNA:</strong></h3>
+                            <h3><strong>Pro-Tip for the CCNA: 💡</strong></h3>
                             <p>If you see an IP address starting with <q>169.254.x.x</q>, the client has configured an <strong>APIPA</strong> (Automatic Private IP Addressing) address.<br>This means the client is configured for DHCP but cannot reach the DHCP server! This is a classic "Layer 2" or "DHCP Scope" issue you'll often see on the exam.</p>
                         `
                     },
@@ -773,7 +773,7 @@
                         content: `
                             <p>Wireless networking allows devices to communicate without physical cables, using radio frequency (RF) signals. Understanding the principles of wireless communication is essential for network design, troubleshooting, and security.</p>
                             <h3><strong>1. Radio Frequency (RF)</strong></h3>
-                            <p>RF is the physical layer of wireless communication. Instead of electrical pulses in copper or light pulses in fiber, wireless devices use **electromagnetic waves** to transmit data.</p>
+                            <p>RF is the physical layer of wireless communication. Instead of electrical pulses in copper or light pulses in fiber, wireless devices use <strong>electromagnetic waves</strong> to transmit data.</p>
                             <ul>
                                 <li><strong>Frequency Bands:</strong> Most Wi-Fi operates on two main bands:</li>
                                 <li><strong>2.4 GHz:</strong> Better range and obstacle penetration (walls), but slower speeds and more interference (microwaves, Bluetooth).</li>
@@ -813,7 +813,7 @@
                             <p>In a Cisco environment (like a Wireless LAN Controller), you might define a basic WLAN via CLI or GUI. Here is a conceptual CLI representation for a simple WPA2-PSK setup:</p>
                             <pre># Create the WLAN with an ID and SSID name\n<code>wlan MyCiscoNetwork 1 MyCiscoNetwork</code>\n\n# Enable the WLAN\n <code>no shutdown</code>\n\n# Set security to WPA2 with AES encryption\n<code>security wpa2 aes\nsecurity wpa2 akm psk</code>\n\nSet the Pre-Shared Key (Password)\n<code>security wpa2 akm psk set-key ascii Cisco123!</code></pre>
 
-                            <p><strong>Pro Tip:</strong> For your CCNA exam, remember that <strong>Co-channel interference</strong> happens when APs are on the same channel, and <strong>Adjacent-channel interference</strong> happens when they are on overlapping channels (like 1 and 2). Always stick to 1, 6, and 11!
+                            <p><strong>Pro Tip: 💡</strong> For your CCNA exam, remember that <strong>Co-channel interference</strong> happens when APs are on the same channel, and <strong>Adjacent-channel interference</strong> happens when they are on overlapping channels (like 1 and 2). Always stick to 1, 6, and 11!
                         `
                     },
                     {
@@ -960,7 +960,7 @@
                             <ul>
                                 <li><strong>Common ICMP Message Types:</strong></li>
                                 <li>- <strong>Echo Request (Type 8) & Reply (Type 0):</strong> Used by 'Ping' command to test connectivity.</li>
-                                <li>- <strong>Time Exceeded (Type 11):</strong> Sent when a packet’s **TTL (Time to Live)** reaches 0. This is the foundation of the <code>traceroute</code> command to map hops.</li>
+                                <li>- <strong>Time Exceeded (Type 11):</strong> Sent when a packet’s <strong>TTL (Time to Live)</strong> reaches 0. This is the foundation of the <code>traceroute</code> command to map hops.</li>
                                 <li>- <strong>Destination Unreachable (Type 3):</strong> Sent by a router when it doesn't have a route to the destination.</li>
                                 <li>- <strong>Redirect (Type 5):</strong> sed to inform a host that there is a better path/gateway to a destination.</li>
                             </ul>
@@ -977,7 +977,7 @@
                             <pre># Standard Ping\nRouter# <code>ping</code>\n\n# Extended Ping (Allows you to specify source interface, size, etc.)\nRouter# <code> ping</code>\nProtocol [ip]:\nTarget IP address: 10.1.1.1\nRepeat count [5]: 10\nDatagram size [100]:\nTimeout in seconds [2]: \nExtended commands [n]: y\nSource address or interface: GigabitEthernet0/0</pre>
 
                             <p><b>B. Traceroute</b></b>
-                            <p>'traceroute' maps the path a packet takes to its destination. It works by sending packets with increasing TTL values (starting at TTL 1). Each router along the way decrements the TTL, and when it hits 0, the router drops the packet and sends back an **ICMP Time Exceeded** message.</p>
+                            <p>'traceroute' maps the path a packet takes to its destination. It works by sending packets with increasing TTL values (starting at TTL 1). Each router along the way decrements the TTL, and when it hits 0, the router drops the packet and sends back an <strong>ICMP Time Exceeded</strong> message.</p>
                             <p><b>Cisco IOS Configuration:</b></p>
                             <pre># Tracing the path to a remote server\nRouter# <code>traceroute 8.8.8.8</code></pre>
                             
@@ -1075,13 +1075,13 @@
                             <p>To see if the physical line is "up/up":</p>
                             <pre>Switch# <code>show interfaces description</code></pre>
 
-                            <h3><strong>4. Common Troubleshooting Tips (CCNA Essentials)</strong></h3>
+                            <h3><strong>4. Common Troubleshooting Tips (CCNA Essentials) 💡</strong></h3>
                             <ul>
                                 <li><strong>Native VLAN Mismatch:</strong> If Switch A has Native VLAN 99 and Switch B has Native VLAN 1, the switch will log "Native VLAN mismatch" errors via CDP (Cisco Discovery Protocol). This can cause traffic leaking between VLANs.</li>
                                 <li><strong>Trunk Mode Mismatch:</strong> If one side is set to <code>access</code> and the other to <code>trunk</code>, the link will not function correctly for multiple VLANs.</li>
                                 <li><strong>VLAN Pruning:</strong> If you forget to add a VLAN to the <code>switchport trunk allowed vlan</code> list, that VLAN's traffic will be dropped, even if the trunk is "up.</li>
                             </ul>
-                            <p><strong>Pro-Tip:</strong> Always remember to create the VLANs in the switch database using the <code>vlan 10</code>, <code>vlan 20</code>, etc., commands. A trunk cannot carry a VLAN that <b>doesn't exist</b> on the switch!</p>
+                            <p><strong>Pro-Tip: 💡</strong> Always remember to create the VLANs in the switch database using the <code>vlan 10</code>, <code>vlan 20</code>, etc., commands. A trunk cannot carry a VLAN that <b>doesn't exist</b> on the switch!</p>
                         `
                     },
                     {
@@ -1159,7 +1159,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <p><strong>Pro-Tip:</strong> In a secure environment, always use <code>no cdp run</code> or <code>no lldp run</code> on interfaces connected to the internet or untrusted guest networks.<br>You don't want to hand out a map of your internal hardware to potential attackers!
+                            <p><strong>Pro-Tip: 💡</strong> In a secure environment, always use <code>no cdp run</code> or <code>no lldp run</code> on interfaces connected to the internet or untrusted guest networks.<br>You don't want to hand out a map of your internal hardware to potential attackers!
                         `
                     },
                     {
@@ -1222,7 +1222,7 @@
                                 <li><strong>Bridge ID:</strong> Composed of Priority (Default 32768) + VLAN ID + MAC Address.</li>
                                 <li><strong>PortFast:</strong> Enables immediate transition from Discarding to Forwarding on access ports.</li>
                             </ul>
-                            <p><strong>Tip:</strong> In a production network, you should always manually set your primary and secondary root bridges to ensure the most powerful switches handle the traffic.</p>
+                            <p><strong>Tip: 💡</strong> In a production network, you should always manually set your primary and secondary root bridges to ensure the most powerful switches handle the traffic.</p>
                             <h3><strong>Configuration Example:</strong></h3>
                             <pre># Set the switch as the primary root for VLAN 10\nSwitch(config)# <code>spanning-tree vlan 10 root primary</code>\n\n# Or manually set a lower priority (must be in increments of 4096)\nSwitch(config)# <code>spanning-tree vlan 10 priority 4096</code></pre>
 
@@ -1552,10 +1552,10 @@
                         summary: "Telnet, SSH, HTTP, HTTPS, console, TACACS+/RADIUS, and cloud managed",
                         content: `
                             <h3><strong>1. Console (Out-of-Band)</strong></h3>
-                            <p>The **Console port** is your "emergency" or "day zero" access. It requires a physical cable (usually a RJ-45 to DB-9 or USB) connected directly from your laptop to the device.</p>
+                            <p>The <strong>Console port</strong> is your "emergency" or "day zero" access. It requires a physical cable (usually a RJ-45 to DB-9 or USB) connected directly from your laptop to the device.</p>
                             <ul>
                                 <li><strong>Why use it?</strong> It doesn't require the device to have an IP address or working network interface. It is used for initial configuration or if you accidentally lock yourself out via a bad firewall rule.</li>
-                                <li><strong>Security Tip:</strong> Since it requires physical access, the "security" is often the locked door of the server room.</li>
+                                <li><strong>Security Tip: 💡</strong> Since it requires physical access, the "security" is often the locked door of the server room.</li>
                             </ul>
 
                             <h3><strong>Basic Console Configuration:</strong></h3>
@@ -1735,7 +1735,7 @@
 
                             <pre># View all configured WLANs\nSwitch# <code>show wlan summary</code>\n\n# View specific details for WLAN ID 1 (Security, SSID, QoS)\nSwitch# <code>show wlan id 1</code>\n\n# Check the status of the wireless radios\nSwitch# <code>show controllers dot11Radio 0 summary</code></pre>
                             
-                            <h3><strong>Pro-Tip for the Exam</strong></h3>
+                            <h3><strong>Pro-Tip for the Exam 💡</strong></h3>
                             <p>Keep in mind the <strong>"Three Pillars of Connectivity"</strong> for a client to successfully join a WLAN:
                             <ul>
                                 <li>1. <strong>VLAN Mapping:</strong> The WLAN must be mapped to a valid, active VLAN/Interface.</li>
@@ -1766,7 +1766,7 @@
 
                             <h3><strong>The "VTP Revision Number" Danger</strong></h3>
                             <p>This is a classic CCNA exam topic! Every time you change a VLAN, the <strong>Configuration Revision Number</strong> increases.<br>If you plug in an old switch with a *higher* revision number into your network, it can overwrite your entire VLAN database, potentially deleting all your production VLANs.</p>
-                            <p><strong>Pro Tip:</strong> Always reset the revision number to 0 before adding a switch to the network by changing its VTP domain to a dummy name and then back, or by switching it to Transparent mode and back to Client/Server.</p>
+                            <p><strong>Pro Tip: 💡</strong> Always reset the revision number to 0 before adding a switch to the network by changing its VTP domain to a dummy name and then back, or by switching it to Transparent mode and back to Client/Server.</p>
 
                             <h3><strong>Configuration Syntax</strong></h3>
                             <pre># Set the VTP Domain\nSwitch(config)# <code>vtp domain MyNetwork</code>\n\n# Set a VTP Password (for security)\nSwitch(config)# <code>vtp password CiscoPass</code>\n\n# Choose the mode\nSwitch(config)# <code>vtp mode server</code>\n\n# Check the status\nSwitch# <code>show vtp status</code></pre>
@@ -1830,7 +1830,7 @@
                                 </tbody>
                             </table>
 
-                            <p><strong>Tutor Note:</strong> If you are preparing for the CCNA exam, remember that <strong>VTP requires a Trunk link</strong> to work!<br>VTP advertisements travel over trunks using DTP or static configurations to exist.</p>
+                            <p><strong>Tutor Note: 💡</strong> If you are preparing for the CCNA exam, remember that <strong>VTP requires a Trunk link</strong> to work!<br>VTP advertisements travel over trunks using DTP or static configurations to exist.</p>
 
                         `
                     }
@@ -1905,7 +1905,7 @@
                                 <li><strong>GigabitEthernet0/1</strong>: The exit interface on the local router.</li>
                             </ul>
 
-                            <h3><strong>Pro-Tip for the CCNA Exam:</strong></h3>
+                            <h3><strong>Pro-Tip for the CCNA Exam: 💡</strong></h3>
                             <p>Remember the selection logic!</p>
                             <ul>
                                 <li>1.  <strong>Longest Match:</strong>The router first looks for the most specific mask (e.g., a /28 is preferred over a /24).</li>
@@ -2036,7 +2036,7 @@
                             <h3><strong>Test Connectivity</strong></h3>
                             <pre># Ping the remote destination\nRouter# <code>ping 192.168.2.1</code>\nRouter# <code>ping ipv6 2001:db8:acad:2::1</code>\n\n# Trace the path to see which route is being used\nRouter# <code>traceroute 192.168.2.1</code></pre>
                             
-                            <h3><strong>Quick CCNA Tip:</strong></h3>
+                            <h3><strong>Quick CCNA Tip: 💡</strong></h3>
                             <ul>
                                 <li>In the 'show ip route' output:</li>
                                 <li>- <strong>  S  </strong> stands for Static.</li>
@@ -2103,7 +2103,7 @@
                             <p>Verify that OSPF routes (marked with <strong>O</strong>) are appearing in the routing table.</p>
                             <pre>Router# <code>show ip route ospf</code></pre>
                             
-                            <h3><strong>Quick Troubleshooting Tip</strong></h3>
+                            <h3><strong>Quick Troubleshooting Tip 💡</strong></h3>
                             <p>If your neighbors are stuck in 'INIT' or 'EXSTART' state, check for these common mismatches:</p>
                             <ul>
                                 <li><strong>Subnet Mismatch:</strong> Neighbors must be on the same subnet.</li>
@@ -2202,7 +2202,7 @@
                             </ul>
                             
                             <h3><strong>4. Configuring a Multi-Area OSPF</strong></h3>
-                            <p>Imagine we have a router acting as an **ABR**. It has one interface in the backbone (Area 0) and one in a branch (Area 10).</p>
+                            <p>Imagine we have a router acting as an <strong>ABR</strong>. It has one interface in the backbone (Area 0) and one in a branch (Area 10).</p>
                             <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>router ospf 1</code>\nRouter(config-router)# <code>router-id 1.1.1.1</code>\n\n! Interface in Area 0 (Backbone)\nRouter(config-router)# <code>network 10.1.1.0 0.0.0.3 area 0</code>\n\n! Interface in Area 10 (Branch)\nRouter(config-router)# <code>network 192.168.10.0 0.0.0.255 area 10</code>\n\n* Note:\nThe ABR is the only place where the 'area' command will reference two different numbers.</pre>
                             
                             <h3><strong>5. Benefits of Multi-Area OSPF</strong></h3>
@@ -2215,7 +2215,7 @@
                             <h3><strong>6. Verification Commands</strong></h3>
                             <p>To see if your Multi-Area configuration is working correctly, use these essential commands:</p>
                             <pre>! Check which areas the router is connected to\nRouter# <code>show ip ospf</code>\n\n! View the LSDB and look for Summary Net Link States (Type 3)\nRouter# <code>show ip ospf database</code>\n\n! Verify that inter-area routes appear as 'IA' in the routing table\nRouter# <code>show ip route ospf</code></pre>
-                            <p><strong>Pro-Tip:</strong> When you look at <code>show ip route</code>, routes from other areas will be marked with <strong>OI</strong> (OSPF Inter-Area). This tells you the ABR is successfully doing its job!</p>                            
+                            <p><strong>Pro-Tip: 💡</strong> When you look at <code>show ip route</code>, routes from other areas will be marked with <strong>OI</strong> (OSPF Inter-Area). This tells you the ABR is successfully doing its job!</p>                            
                         `
                     }
                 ]
@@ -2313,7 +2313,7 @@
                                 <li>'~' = Configured statically</li>
                             </ul>
                             
-                            <h3><strong>Pro-Tip: NTP Authentication (CCNA Level)</strong></h3>
+                            <h3><strong>Pro-Tip: NTP Authentication (CCNA Level) 💡</strong></h3>
                             <p>In a real-world environment, you don't want just any device pretending to be a time server.<br>You can add a MD5 password (key) to ensure the client only trusts your specific server.</p>
                             <h3><strong>On both Server and Client:</strong></h3>
                             <pre>R1(config)# <code>ntp authenticate</code>\nR1(config)# <code>ntp authentication-key 1 md5 CISCO123</code>\nR1(config)# <code>ntp trusted-key 1</code></pre>
@@ -2512,11 +2512,11 @@
                                 </tbody>
                             </table>
                             
-                            <h3><strong>*Pro Tip for the Exam:</strong> Use this mnemonic to remember the order</h3>
+                            <h3><strong>*Pro Tip for the Exam: 💡</strong> Use this mnemonic to remember the order</h3>
                             <p>"<strong>E</strong>very <strong>A</strong>wesome <strong>C</strong>isco <strong>E</strong>ngineer <strong>W</strong>ill <strong>N</strong>eed <strong>I</strong>ce <strong>C</strong>ream"<br>(Emergency, Alert, Critical, Error, Warning, Notice, Informational, Debugging).</p>
                             
                             <h3><strong>2. Syslog Facilities</strong></h3>
-                            <p>While the severity tells you "how bad" the situation is, the <strong>Facility</strong> tells you "who" or "what" generated the message.<br>On a Cisco device, facilities identify the source of the message (e.g., the IP stack, OSPF, or a physical interface).<br>When sending logs to a remote Linux-based Syslog server, Cisco devices typically use the **local7** facility by default.</p>
+                            <p>While the severity tells you "how bad" the situation is, the <strong>Facility</strong> tells you "who" or "what" generated the message.<br>On a Cisco device, facilities identify the source of the message (e.g., the IP stack, OSPF, or a physical interface).<br>When sending logs to a remote Linux-based Syslog server, Cisco devices typically use the <strong>local7</strong> facility by default.</p>
                             
                             <h3><strong>Common Cisco facilities include:</strong></h3>
                             <ul>
@@ -2571,7 +2571,7 @@
                             <h3><strong>Configuration Syntax:</strong></h3>
                             <p>You must apply the configuration on the interface <strong>closest to the client</strong> (the gateway).</p>
                             <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>interface GigabitEthernet0/0</code>\nRouter(config-if)# <code>ip helper-address 10.1.1.50</code>\nRouter(config-if)# <code>exit</code></pre>
-                            <p><strong>Pro Tip:</strong> You can configure multiple 'ip helper-address' commands if you have redundant DHCP servers!</p>
+                            <p><strong>Pro Tip 💡:</strong> You can configure multiple 'ip helper-address' commands if you have redundant DHCP servers!</p>
                          
                             <h3><strong>3. Verification Commands</strong></h3>
                             <p>Once configured, you need to ensure the lease was successful. Use these commands to verify the state of your interfaces and the relay process.</p>
@@ -2618,7 +2618,7 @@
                             
                             <h3><strong>1. Classification</strong></h3>
                             <p>Before we can treat a packet differently, we must identify it. Classification is the process of inspecting a packet and assigning it to a "class" based on specific criteria.</p>
-                            <p><strong>Methods:</strong> Access Control Lists (ACLs), incoming interface, or **NBAR** (Network Based Application Recognition) which looks deep into Layer 7 protocols.</p>
+                            <p><strong>Methods:</strong> Access Control Lists (ACLs), incoming interface, or <strong>NBAR</strong> (Network Based Application Recognition) which looks deep into Layer 7 protocols.</p>
                             
                             <h3><strong>2. Marking</strong></h3>
                             <p>Once classified, we "color" the packet so subsequent routers don't have to re-classify it.</p>
@@ -2720,7 +2720,7 @@
                             <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>hostname R1</code>\nR1(config)# <code>ip domain-name cisco.com</code></pre>
 
                             <h3><strong>Step 1: Generate the RSA Key Pair</strong></h3>
-                            <p>This is the "secret sauce" that allows for encryption. I recommend using at least **1024 bits** for security; 2048 is even better.</p>
+                            <p>This is the "secret sauce" that allows for encryption. I recommend using at least <strong>1024 bits</strong> for security; 2048 is even better.</p>
                             <pre>R1(config)# <code>crypto key generate rsa</code>\n# The system will ask: How many bits in the modulus [512]:\n# Type <code>1024</code> and press Enter.</pre>
                             
                             <h3><strong>Step 2: Configure Local Authentication</strong></h3>
@@ -2739,7 +2739,7 @@
                             <p>You want to make sure everything is running correctly. Use these commands to check your work:</p>
                             <pre># Check if SSH is enabled and which version is running\nR1# <code>show ip ssh</code>\n\n# Check the status of current SSH connections\nR1# <code>show ssh</code></pre>
                             
-                            <h3><strong>Pro-Tip for the CCNA Exam</strong></h3>
+                            <h3><strong>Pro-Tip for the CCNA Exam 💡</strong></h3>
                             <p>If you try to generate the RSA keys and get an error, double-check that you have configured both a <strong>hostname</strong> and an <strong>ip domain-name</strong>. The device uses the combination (e.g., 'R1.cisco.com') as the label for the key!</p>
                         `
                     },
@@ -2821,7 +2821,7 @@
                             <p>If you have a new software image on your TFTP server, you can pull it to your router's flash memory:</p>
                             <pre>Router# <code>copy tftp: flash:</code>\nAddress or name of remote host []? <code>10.1.1.50</code>\nSource filename []? <code>c2900-universalk9-mz.SPA.155-3.M3.bin</code>\nDestination filename <code>[c2900-universalk9-mz.SPA.155-3.M3.bin]? </code>\nAccessing tftp://10.1.1.50/c2900-universalk9-mz.SPA.155-3.M3.bin...\nLoading... ############################################\n[OK - 33591764 bytes]</pre>
 
-                            <h3><strong>Pro-Tip for the Exam:</strong></h3>
+                            <h3><strong>Pro-Tip for the Exam: 💡</strong></h3>
                             <p>Remember that <strong>TFTP</strong> is the default choice for most quick Cisco operations, but <strong>FTP</strong> is preferred when you are transferring files across a WAN or need to ensure the file integrity of a very large image!</p>
                         `
                     },
@@ -2979,7 +2979,7 @@
                             </ul>
 
                             <h3><strong>CCNA Example: Mitigating Unauthorized Access</strong></h3>
-                            <p>As a CCNA student, one of the first mitigation techniques you learn is securing the management plane of a router.<br>If you leave your VTY (Telnet/SSH) lines unprotected, that is a **vulnerability**. A hacker attempting a brute-force password attack is the <strong>threat</strong>.<br>Here is how we mitigate that by enforcing SSH and using local authentication:</p>
+                            <p>As a CCNA student, one of the first mitigation techniques you learn is securing the management plane of a router.<br>If you leave your VTY (Telnet/SSH) lines unprotected, that is a <strong>vulnerability</strong>. A hacker attempting a brute-force password attack is the <strong>threat</strong>.<br>Here is how we mitigate that by enforcing SSH and using local authentication:</p>
                             <pre># Enter global configuration mode\nRouter# <code>configure terminal</code>\n\n# Create a local user with a secret password\nRouter(config)# <code>username Admin1 privilege 15 secret Cisc0_Secure_Pa$$</code>\n\n# Define the domain name (required for SSH)\nRouter(config)# <code>ip domain-name lab.local</code>\n\n# Generate RSA keys for encryption\nRouter(config)# <code>crypto key generate rsa</code>\n\n# Choose 1024 or 2048 bits for better security\n\n# Configure the virtual lines (VTY)\nRouter(config)# <code>line vty 0 4</code>\n\n# Tell the router to check the local database for users\nRouter(config-line)# <code>login local</code>\n\n# Only allow SSH, disable insecure Telnet\nRouter(config-line)# <code>transport input ssh</code>\nRouter(config-line)# <code>exit</code></pre>
 
                             <table>
@@ -3128,7 +3128,7 @@
                             <h3><strong>5. Encrypting Clear-Text Passwords</strong></h3>
                             <p>Commands like 'password ConsolePass!' store the password in plain text in the configuration file. To hide these from "shoulder surfers," use the global encryption service:</p>
                             <pre>Router# <code>configure terminal</code>\nRouter(config)# <code>service password-encryption</code></pre>
-                            <p>* Tip:service password-encryption only uses a weak Vigenère cipher (Type 7) to protect plain-text passwords in the config file, which can easily be decrypted.<br>It is meant to stop casual shoulder-surfing, whereas enable secret and username ... secret use strong cryptographic hashing (MD5/SHA-256/SHA-512) which cannot be easily reversed.</p>
+                            <p>* Tip 💡:service password-encryption only uses a weak Vigenère cipher (Type 7) to protect plain-text passwords in the config file, which can easily be decrypted.<br>It is meant to stop casual shoulder-surfing, whereas enable secret and username ... secret use strong cryptographic hashing (MD5/SHA-256/SHA-512) which cannot be easily reversed.</p>
                             
                             <h3><strong>6. Verification</strong></h3>
                             <p>Now that we have configured our security, we must verify it. Use the following commands to check your work:</p>
@@ -3390,7 +3390,7 @@
                             <p>To ensure your ACL is working correctly and see how many packets have matched your rules, use these commands:</p>
                             <pre># View all ACLs and match counters:\nRouter# <code>show access-lists</code>\n\n#Check which ACL is applied to an interface:\nRouter# <code>show ip interface GigabitEthernet0/0</code>\n\nCheck the running configuration:\nRouter# <code>show running-config | section access-list</code></pre>
 
-                            <h3><strong>Pro-Tips for the CCNA Exam:</strong></h3>
+                            <h3><strong>Pro-Tips for the CCNA Exam: 💡</strong></h3>
                             <ul>
                                 <li><strong>Top-Down Processing:</strong> The router reads ACLs from the top line down. As soon as it finds a match, it stops looking. Put your most specific rules at the top!</li>
                                 <li><strong>Wildcard Masks:</strong> Remember that ACLs use wildcard masks (the inverse of a subnet mask).</li>
@@ -3563,7 +3563,7 @@
                         title: "5.9 Describe wireless security protocols",
                         summary: "WPA, WPA2, and WPA3",
                         content: `
-                            <p>In the world of networking, securing the "airwaves" is critical because wireless signals can travel through walls and be intercepted by anyone nearby.<br>Wireless security protocols provide **encryption** (to keep data private) and **authentication** (to ensure only authorized users connect).</p>
+                            <p>In the world of networking, securing the "airwaves" is critical because wireless signals can travel through walls and be intercepted by anyone nearby.<br>Wireless security protocols provide <strong>encryption</strong> (to keep data private) and <strong>authentication</strong> (to ensure only authorized users connect).</p>
                             
                             <h3><strong>1. WPA (Wi-Fi Protected Access)</strong></h3>
                             <p>WPA was introduced in 2003 as a temporary fix for the severe vulnerabilities found in the original WEP (Wired Equivalent Privacy) protocol.</p>
@@ -3637,24 +3637,158 @@
                             <p>When configuring a wireless network on a Cisco device (like an Integrated Services Router or a Wireless LAN Controller), you specify the security parameters.<br>Here is how you might define a basic WPA2-PSK SSID on a modern Cisco interface:</p>
                             <pre># Enter global configuration mode\nRouter# <code>aaa new-model</code>\n\n# Define the wireless profile\nRouter(config)# <code>wlan MySecureNetwork 1 MySecureNetwork</code>\n\n# Enable the WLAN\nRouter(config-if)# <code> no shutdown</code>\n\n# Configure WPA2 Security\nRouter(config)# <code>security wpa</code>\nRouter(config-wpa)# <code>wpa2</code>\nRouter(config-wpa)# <code>wpa2 ciphers aes</code>\n\n# Set the Pre-Shared Key (Password)\nRouter(config)# <code>security wpa akm psk set-key ascii MyStrongPassword123</code></pre>  
                             
-                            <h3><strong>Tutor's Pro-Tip for the CCNA:</strong></h3>
+                            <h3><strong>Tutor's Pro-Tip for the CCNA: 💡</strong></h3>
                             <p>On the exam, remember that <strong>WPA2 uses AES/CCMP</strong>, while <strong>WPA3 uses SAE</strong>. If you see a question about preventing "De-authentication attacks," think <strong>WPA3</strong> because it mandates Protected Management Frames!</p>
                         `
                     },
                     {
                         id: "5.10",
-                        title: "5.10 Management & Control Plane Security (CoPP)",
-                        summary: "VTY Access-Classes, Control Plane Policing Rate-Limiting",
+                        title: "5.10 Configure and verify WLAN within the GUI using WPA2 PSK",
+                        summary: "Pre-Shared Key",
                         content: `
-                            <p><strong>CoPP (Control Plane Policing):</strong> Protects CPU from DoS packet floods by applying MQC rate-limiting policies to the control-plane interface.</p>
+                            <p>In the CCNA curriculum, we typically use the <strong>Cisco AireOS WLC</strong> interface.<br>Here is the step-by-step breakdown to configure a WLAN with WPA2-PSK (Pre-Shared Key).</p>
+                            
+                            <h3><strong>Step 1: Create the WLAN</strong></h3>
+                            <ul>
+                                <li>1. Log into the WLC GUI via your browser.</li>
+                                <li>2. Click on the <strong>WLANs</strong> tab in the top menu.</li>
+                                <li>3. On the right-hand side, look for the drop-down menu that says "Create New" and click <strong>Go</strong>.</li>
+                                <li>4. <strong>Profile Name:</strong> Enter a descriptive name (e.g., 'Employee_WiFi').</li>
+                                <li>5. <strong>SSID:</strong> Enter the name users will see on their devices (e.g., 'Cisco_Guest').</li>
+                                <li>6. <strong>ID:</strong> Select a unique ID number (usually defaults to the next available).</li>
+                                <li>7. Click <strong>Apply</strong>.</li>
+                            </ul>
+                            
+                            <h3><strong>Step 2: Configure General Settings</strong></h3>
+                            <p>After clicking Apply, you will be taken to the <strong>Edit</strong> page for that WLAN.</p>
+                            <ul>
+                                <li>1. <strong>Status:</strong> Check the box to <strong>Enable</strong> the WLAN (it is disabled by default!).</li>
+                                <li>2. <strong>Radio Policy:</strong> Usually set to "All" (supports 2.4GHz and 5GHz).</li>
+                                <li>3. <strong>Interface/Interface Group:</strong> Select the VLAN/Interface where this wireless traffic should be mapped (e.g., 'vlan_10').</li>
+                            </ul>
+                            
+                            <h3><strong>Step 3: Configure WPA2-PSK Security</strong></h3>
+                            <ul>
+                                <li>1. Click on the <strong>Security</strong> tab, then the <strong>Layer 2</strong> sub-tab.</li>
+                                <li>2. <strong>Layer 2 Security:</strong> Select <strong>WPA+WPA2</strong> from the drop-down.</li>
+                                <li>3. <strong>WPA+WPA2 Parameters:</strong></li>
+                                <li>- Check the box for <strong>WPA2 Policy</strong>.</li>
+                                <li>- Under WPA2 Encryption, ensure <strong>AES</strong> is checked (TKIP is deprecated and insecure).</strong></li>
+                                <li>- Under WPA2 Encryption, ensure <strong>AES</strong> is checked (TKIP is deprecated and insecure).</strong></li>
+                                <li>4. <strong>Authentication Key Management (AKM):</strong></li>
+                                <li>- Check the box for <strong>PSK</strong>.</li>
+                                <li>5. <strong>PSK Format:</strong> Select <strong>ASCII</strong>.</li>
+                                <li>6. <strong>Pre-Shared Key:</strong> Type your password (e.g., 'Cisco123!').</li>
+                                <li>7. Click <strong>Apply</strong> at the top right.</li>
+                            </ul>
+                            
+                            <h3><strong>Step 4: Verification</strong></h3>
+                            <p>Via the  <strong>GUI:</strong></p>
+                            <ul>
+                                <li>1. Go back to the <strong>WLANs</strong> tab.</li>
+                                <li>2. Locate your new WLAN in the list.</li>
+                                <li>3. Verify that the <strong>Status</strong> column shows <strong>Enabled</strong> and the <strong>Security Policies</strong> column lists <strong>[WPA2][Auth(PSK)][AES]</strong>.</li>
+                                <li>4. Go to the <strong>Monitor</strong> tab to see if any clients have successfully associated with the SSID.</li>
+                            </ul>
+                            <p>Via the  <strong>CLI:</strong></p>
+                            <p>Even though you configured it in the GUI, a true CCNA knows how to verify using the command line! Access the WLC via SSH and use the following commands:</p>
+                            <p>To see a summary of all WLANs:</p>
+                            <pre>Router# <code>show wlan summary</code></pre>
+                            <p>To see the specific details and security configuration of your new WLAN (replace '1' with your WLAN ID):</p>
+                            <pre>Router# <code>show wlan 1</code></pre>
+                            <p>To verify which clients are currently connected:</p>
+                            <pre>Router# <code>show client summary</code></pre>
+                            
+                            <h3><strong>Tutor Tip! 💡</strong></h3>
+                            <p>When configuring WPA2-PSK, always ensure <strong>AES (CCMP)</strong> is selected. If you choose TKIP, your wireless speeds will likely be capped at 54 Mbps (802.11g speeds), even if you have modern 802.11ac or 802.11ax Access Points!</strong></p>
                         `
                     },
                     {
                         id: "5.11",
                         title: "5.11 General",
-                        summary: "VTY Access-Classes, Control Plane Policing Rate-Limiting",
+                        summary: "Securing the Management Plane & Control Plane Policing (CoPP) concepts",
                         content: `
-                            <p><strong>CoPP (Control Plane Policing):</strong> Protects CPU from DoS packet floods by applying MQC rate-limiting policies to the control-plane interface.</p>
+                            <p>Knowing how to restrict management traffic using Control Plane Policing or strict VTY ACLs is common on exam practical questions.</p>
+                            <p>To understand how to protect a router or switch, we first have to visualize the different "planes" of operation. While the <strong>Data Plane</strong> handles the actual forwarding of user traffic, the <strong>Management Plane</strong> and <strong>Control Plane</strong> are the "brains" and "access points" of the device. If these are compromised or overwhelmed, the entire network fails.</p>
+                            
+                            <h3><strong>1. Securing the Management Plane</strong></h3>
+                            <p>The Management Plane is how you, the administrator, interact with the device. This includes SSH, HTTPS, SNMP, and the Console port.<br>If an attacker gains access here, they own your network.</strong></p>
+                            
+                            <h3><strong>Key Security Strategies:</strong></h3>
+                            <ul>
+                                <li><strong>Disable Insecure Protocols:</strong> Turn off Telnet and HTTP in favor of SSH and HTTPS.</li>
+                                <li><strong>Implement AAA (Authentication, Authorization, and Accounting):</strong> Use a central server (like TACACS+ or RADIUS) to track who logged in and what they changed.</li>
+                                <li><strong>VTY Access Lists:</strong> Use an Access Control List (ACL) to restrict which IP addresses are allowed to attempt a remote login.</li>
+                            </ul>
+                            
+                            <h3><strong>1. Securing the Management Plane</strong></h3>
+                            <p>Create an ACL for authorized admin subnets</p>
+                            <pre>Router(config)# <code>access-list 10 permit 192.168.10.0 0.0.0.255</code></pre>
+                            <p>Apply the ACL and force SSH</p>
+                            <pre>Router(config)# <code>line vty 0 15</code>\nRouter(config-line)# <code>access-class 10 in</code>\nRouter(config-line)# <code>transport input ssh</code>\nRouter(config-line)# <code>login local</code>\nRouter(config-line)# <code>exit</code></pre>
+                            <p>Basic SSH setup</p>
+                            <pre>Router(config)# <code>ip domain-name lab.local</code>\nRouter(config)# <code>crypto key generate rsa general-keys modulus 2048</code>\nRouter(config)# <code>username admin privilege 15 secret C1sc0_Pa$$w0rd</code></pre>
+                            
+                            <h3><strong>2. Control Plane Policing (CoPP)</strong></h3>
+                            <p>The <strong>Control Plane</strong> is responsible for "thinking"—processing routing protocols (OSPF, BGP), ICMP (pings), and ARP.<br>These packets are sent directly to the device's CPU. </p>
+                            <ul>
+                                <li><strong>The Threat:</strong> A Denial of Service (DoS) attack. If an attacker floods your router with thousands of BGP packets or Pings, the CPU hits 100%, and the router stops routing legitimate traffic.</li>
+                                <li><strong>The Solution:</strong> <strong>CoPP</strong>. Think of CoPP as a "bouncer" for the CPU. It uses the MQC (Modular QoS CLI) framework to rate-limit traffic destined for the router's brain.</li>
+                            </ul>
+                            
+                            <h3><strong>How CoPP works:</strong></h3>
+                            <ul>
+                                <li><strong>Classify:</strong> Identify which traffic is "Critical" (OSPF), "Management" (SSH), or "Low Priority" (ICMP).</li>
+                                <li><strong>Policy:</strong> Define the allowed rate (bandwidth) for each class.</li>
+                                <li><strong>Apply:</strong> Attach the policy to the special 'control-plane' interface.</li>
+                            </ul>
+                            
+                            <h3><strong>Configuration Example: Implementing a Basic CoPP</strong></h3>
+                            <p>In this example, we will rate-limit ICMP traffic to ensure a Ping flood doesn't crash the router.</p>
+                            <p>1. Define the traffic to match</p>
+                            <pre>Router(config)# <code>access-list 100 permit icmp any any</code></pre>
+                            <p>2. Create a Class Map</p>
+                            <pre>Router(config)# <code>class-map MATCH_ICMP</code>\nRouter(config-cmap)# <code>match access-group 100</code>\nRouter(config-cmap)# <code>exit</code></pre>
+                            <p>3. Create a Policy Map (The Bouncer's Rules)</p>
+                            <pre>Router(config)# <code>policy-map COPP_POLICY</code>\nRouter(config-pmap)# <code>class MATCH_ICMP</code>\n\n# Limit ICMP to 8000 bits per second; exceed = drop\nRouter(config-pmap-c)# <code>police 8000 conform-action transmit exceed-action drop</code>\nRouter(config-pmap-c)# <code>exit</code>\nRouter(config-pmap)# <code>exit</code></pre>
+                            <p>4. Apply to the Control Plane</p>
+                            <pre>Router(config)# <code>control-plane</code>\nRouter(config-cp)# <code>service-policy input COPP_POLICY</code>\nRouter(config-cp)# <code>exit</code></pre>
+
+                            <table>
+                                <caption>
+                                    <b>Summary Comparison Table</b>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Management Plane Security</th>
+                                        <th>Control Plane Policing (CoPP)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Primary Goal</strong></td>
+                                        <td>Prevent unauthorized access/login.</td>
+                                        <td>Prevent CPU exhaustion (DoS protection).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Traffic Type</strong></td>
+                                        <td>SSH, Telnet, SNMP, HTTPS.</td>
+                                        <td>OSPF, EIGRP, ICMP, ARP, BGP.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Method</strong></td>
+                                        <td>AAA, SSH, VTY ACLs.</td>
+                                        <td>Class-Maps, Policy-Maps, Rate Limiting.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Analogy</strong></td>
+                                        <td>Locking the office door so only the manager gets in.</td>
+                                        <td>Putting a filter on a pipe so it doesn't get clogged by debris.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p><strong>Pro-Tip for the Exam: 💡</strong> Remember that Management Plane traffic (like SSH) *eventually* hits the Control Plane because the CPU has to process the login. Therefore, a robust security posture requires securing both!</p>
                         `
                     }
                 ]
@@ -3698,7 +3832,7 @@
                             <pre>* yaml\n<code>- name: Configure VLANs on Cisco Switches\n  hosts: access_switches\n  gather_facts: no\n  tasks:\n    - name: Create VLAN 10\n      cisco.ios.ios_vlans:\n        config:\n            - name: Sales\n              vlan_id: 10\n        state: merged</code></pre>
 
                             <h3><strong>REST APIs and JSON</strong></h3>
-                            <p>Modern controllers (like DNA Center or Meraki) use <strong>REST APIs</strong>. We send requests (GET, POST, PUT, DELETE) and receive data back in **JSON** format, which is easy for computers to parse.<br>For example, you can retrieve the configuration of a device or push new settings programmatically.</p>
+                            <p>Modern controllers (like DNA Center or Meraki) use <strong>REST APIs</strong>. We send requests (GET, POST, PUT, DELETE) and receive data back in <strong>JSON</strong> format, which is easy for computers to parse.<br>For example, you can retrieve the configuration of a device or push new settings programmatically.</p>
                             <pre>* Example of a JSON response representing an interface:\n<code>{\n    "interface": {\n        "name": "GigabitEthernet1",\n        "description": "Uplink to ISP",\n        "enabled": true,\n        "ipv4": {\n            "address": "192.168.50.1",\n            "netmask": "255.255.255.0"\n        }\n    }\n}</code></pre>
 
                             <h3><strong>Summary for your CCNA Journey</strong></h3>
@@ -3804,7 +3938,7 @@
                             </ul>
 
                             <h3><strong>The SDN Shift:</strong></h3>
-                            <p>In traditional networking, these planes are bundled together on every device. In SDN, we <strong>decouple</strong> them. We take the Control Plane off the individual switches and centralize it into a **Controller** (like Cisco DNA Center or vManage). The devices (switches/routers) become "dumb" forwarding devices that simply follow the instructions from the controller.</p>
+                            <p>In traditional networking, these planes are bundled together on every device. In SDN, we <strong>decouple</strong> them. We take the Control Plane off the individual switches and centralize it into a <strong>Controller</strong> (like Cisco DNA Center or vManage). The devices (switches/routers) become "dumb" forwarding devices that simply follow the instructions from the controller.</p>
 
                             <h3><strong>2. Underlay, Overlay, and Fabric</strong></h3>
                             <p>Think of this like a GPS app (Overlay) running on top of physical roads (Underlay).</p>
@@ -4078,14 +4212,97 @@
                                 </tbody>
                             </table>
 
+                            <h3><strong>Summary for the CCNA Exam</strong></h3>
+                            <ul>
+                                <li><strong>Ansible</strong> is great for the "day-to-day" configuration of your existing Cisco switches. It is <strong>Agentless</strong> and uses <strong>Playbooks (YAML)</strong>.</li>
+                                <li><strong>Terraform</strong> is great for "building the house." It uses a <strong>State File</strong> to ensure the infrastructure matches the code exactly.</li>
+                                <li>Both tools reduce human error (no more typos in the CLI!) and allow you to treat your network like software.</li>
+                            </ul>
                         `
                     },
                     {
                         id: "6.7",
-                        title: "6.7 JSON Data Parsing & Python",
+                        title: "6.7 Recognize components of JSON-encoded data",
                         summary: "Objects {}, Arrays [], Key-Value Pairs, Python json.loads()",
                         content: `
-                            <pre><code>import json\n\nraw_json = '{"vlan_database": {"vlans": [{"id": 10, "name": "Sales"}, {"id": 20, "name": "Voice"}]}}'\ndata = json.loads(raw_json)\n\n# Accessing VLAN 20 Name\nvlan_20_name = data["vlan_database"]["vlans"][1]["name"]\nprint(f"VLAN Name: {vlan_20_name}")  # Output: Voice</code></pre>
+                            <p>In modern networking, especially when dealing with APIs (like Cisco DNA Center or SD-WAN vManage) and automation, **JSON (JavaScript Object Notation)** is the most common format used to exchange data between a network controller and a script. Think of JSON as a way to organize data so that both humans and computers can read it easily.<br>Here are the core components you need to recognize:</p>
+
+                            <h3><strong>1. Objects (The Curly Braces '{ }')</strong></h3>
+                            <p>An object represents a single entity. In JSON, an object always begins with a left curly brace '{' and ends with a right curly brace '}'.</p>
+                            <pre>json\n{\n  <code>"hostname": "Core-Switch-01"</code>\n}</pre>
+
+                            <h3><strong>2. Key-Value Pairs</strong></h3>
+                            <p>Data in JSON is written as <strong>key-value pairs</strong>.<br>* The <strong>Key</strong> is always a string wrapped in double quotes '" "'.<br>* The <strong>Value</strong> follows a colon ':' and can be a string, number, boolean, array, or another object.</p>
+
+                            <h3><strong>3. Data Types</strong></h3>
+                            <p>You must be able to identify the different types of values:</p>
+                            <ul>
+                                <li><strong>String:</strong> Text wrapped in double quotes (e.g., "GigabitEthernet0/1").</li>
+                                <li><strong>Number:</strong> Plain numbers without quotes (e.g., 100).</li>
+                                <li><strong>Boolean:</strong> Logical 'true' or 'false' (no quotes).</li>
+                                <li><strong>Null:</strong> Represents an empty value or 'null'.</li>
+                            </ul>
+
+                            <h3><strong>4. Arrays (The Square Brackets '[ ]')</strong></h3>
+                            <p>An array is an ordered list of values. Arrays are wrapped in square brackets '[ ]'. This is often used in networking to list multiple interfaces, IP addresses, or VLANs.</p>
+                            <pre>json\n{\n  <code>"vlans": [10, 20, 30, 40]</code>\n}</pre>
+
+                            <h3><strong>5. Commas (The Separators ',')</strong></h3>
+                            <p>Commas are used to separate multiple key-value pairs within an object, or multiple elements within an array.<br><strong>Crucial Rule:</strong> Do not put a comma after the last item in a list or object!</p>
+
+                            <h3><strong>Putting it All Together: A Networking Example</strong></h3>
+                            <p>Here is how a Cisco interface might be represented in JSON-encoded data. Notice how objects and arrays are nested:</p>
+                            <pre>json\n{\n  <code>"interface":</code> {\n    <code>"name": "GigabitEthernet1",</code>\n    <code>"description": "Link to Distribution Switch",</code>\n    <code>"enabled": true,</code>\n    <code>"mtu": 1500,</code>\n    <code>"ip_addresses":</code> [\n      {\n        <code>"address": "192.168.1.1",</code>\n        <code>"mask": "255.255.255.0"</code>\n      }\n    ]\n  }\n}\n</pre>
+
+                            <h3><strong>Summary Checklist for the CCNA Exam:</strong></h3>
+                            <p>You must be able to identify the different types of values:</p>
+                            <ul>
+                                <li><strong>'{ }' Braces</strong> = Object</li>
+                                <li><strong>'[ ]' Brackets</strong> = Array (List)</li>
+                                <li><strong>' : ' Colon*</strong> = Separator between Key and Value</li>
+                                <li><strong>' , ' Comma*</strong> = Separator between multiple pairs or list items</li>
+                                <li><strong>Double Quotes</strong> = Required for all keys and string values</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        id: "6.8",
+                        title: "6.8 JSON Parsing Practice",
+                        summary: "Objects {}, Arrays [], Key-Value Pairs, Python json.loads()",
+                        content: `
+                            <p>Adding a 5-line Python snippet using the built-in json module (import json; parsed = json.loads(response)) bridges the gap between raw JSON text and actual network scripting.</p>
+                            
+                            <p>In modern networking, especially when working with APIs (like Cisco DNA Center or Meraki), we don't look at CLI outputs anymore—we look at JSON.<br>Parsing is simply the process of taking a JSON string and turning it into a data structure (like a Python Dictionary) so we can extract specific information.</p>
+
+                            <h3><strong>1. The Anatomy of JSON</strong></h3>
+                            <p>Before we parse, remember these three rules:</p>
+                            <ul>
+                                <li><strong>Objects</strong> are surrounded by curly braces '{ }'. (Think of these as Python Dictionaries).</li>
+                                <li><strong>Arrays</strong> are surrounded by square brackets '[ ]'. (Think of these as Python Lists).</li>
+                                <li><strong>Key/Value pairs</strong> are separated by colons '"key": "value"'.</li>
+                            </ul>
+
+                            <h3><strong>2. A Real-World Networking Example</strong></h3>
+                            <p>Imagine we run a 'GET' request to a router to see its interface status. The API returns this JSON data:</p>
+                            <pre>json\n{\n  <code>"device_name": "Core-SW-01"</code>,\n  <code>"interfaces":</code> [\n    {\n      <code>"name": "GigabitEthernet0/1"</code>,\n      <code>"status": "up"</code>,\n      <code>"ip_address": "10.1.1.1"</code>\n    },\n    {\n      <code>"name": "GigabitEthernet0/2"</code>,\n      <code>"status": "down"</code>,\n      <code>"ip_address": "10.1.1.2"</code>\n    }\n  ]\n}</pre>
+
+                            <h3><strong>3. Parsing with Python</strong></h3>
+                            <p>In a CCNA context, you’ll likely use Python's 'json' library to parse this. Here is how you would access the IP address of the first interface:</p>
+                            <pre>python\n<code>import json</code>\n\n# This represents the data received from an API\n<code>raw_json = \n'{\n   "device_name": "Core-SW-01",\n   "interfaces": [\n       {"name": "GigabitEthernet0/1", "status": "up", "ip_address": "10.1.1.1"}\n     ]\n}'</code>\n\n# Parse the JSON into a Python Dictionary\n<code>data = json.loads(raw_json)</code>\n\n# Accessing the data\n<code>device = data["device_name"]\nfirst_interface_ip = data["interfaces"][0]["ip_address"]\n\nprint(f"Device: {device}")\nprint(f"IP: {first_interface_ip}")</code></pre>
+
+                            <h3><strong>4. Practice Challenge!</strong></h3>
+                            <p>Now it's your turn. Below is a JSON object representing a <strong>VLAN configuration</strong>.<br><strong>The Goal:</strong> Tell me the "path" or the Python code you would use to extract the <strong>name</strong> of <strong>VLAN 20</strong>.</p>
+                            <pre>json\n{\n  <code>"vlan_database":</code> {\n    <code>"switch_id": "SW-Office-A"</code>,\n    <code>"vlans":</code> [\n      {\n        <code>"id": 10</code>,\n        <code>"name": "Management"</code>,\n        <code>"tagged": true</code>\n      },\n      {\n        <code>"id": 20</code>,\n        <code>"name": "Voice"</code>,\n        <code>"tagged": true</code>\n      },\n      {\n        <code>"id": 30</code>,\n        <code>"name": "Guest"</code>,\n        <code>"tagged": false</code>\n      }\n    ]\n  }\n}</pre>
+                            <p>How to solve it:</p>
+                            <ul>
+                                <li>1. Start at the root object.</li>
+                                <li>2. Enter the 'vlan_database' key.</li>
+                                <li>3. Access the 'vlans' list.</li>
+                                <li>4. Pick the correct index (remember, Python lists start at <strong>0</strong>).</li>
+                                <li>5. Access the 'name' key.</li>
+                            </ul>
+                            <p>Write down your answer (the code path) and I'll tell you if you're ready for the DevNet/CCNA exam!</p>
+                            <pre>python\n<code>import json</code>\n\n# This represents the data received from an API\n<code>raw_json = \n'{\n  "vlan_database":{"switch_id":"SW-Office-A", \n  "vlans": [\n     {"id":10, "name":"Management", "tagged": true},\n     {"id":20, "name":"Voice", "tagged":true},\n     {"id":30, "name":"Guest","tagged":false}\n   ]\n}'</code>\n\n# Parse the JSON into a Python Dictionary\n<code>data = json.loads(raw_json)</code>\n\n# Accessing the data\n<code>vlan_id = data["vlans"][1]["id"]\nvlan_name = data["vlans"][1]["name"]\n\nprint(f"Vlan: {vlan_id}")\nprint(f"Name: {vlan_name}")</code></pre>
                         `
                     }
                 ]
